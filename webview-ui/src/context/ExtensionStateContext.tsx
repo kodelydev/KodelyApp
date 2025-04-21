@@ -1,23 +1,23 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react"
 import { useEvent } from "react-use"
-import { ApiConfigMeta, ExtensionMessage, ExtensionState } from "@roo/shared/ExtensionMessage"
-import { ApiConfiguration } from "@roo/shared/api"
-import { vscode } from "@src/utils/vscode"
-import { convertTextMateToHljs } from "@src/utils/textMateToHljs"
-import { findLastIndex } from "@roo/shared/array"
-import { McpServer } from "@roo/shared/mcp"
-import { checkExistKey } from "@roo/shared/checkExistApiConfig"
-import { Mode, CustomModePrompts, defaultModeSlug, defaultPrompts, ModeConfig } from "@roo/shared/modes"
-import { CustomSupportPrompts } from "@roo/shared/support-prompt"
-import { experimentDefault, ExperimentId } from "@roo/shared/experiments"
-import { TelemetrySetting } from "@roo/shared/TelemetrySetting"
+import { ApiConfigMeta, ExtensionMessage, ExtensionState } from "../../../src/shared/ExtensionMessage"
+import { ApiConfiguration } from "../../../src/shared/api"
+import { vscode } from "../utils/vscode"
+import { convertTextMateToHljs } from "../utils/textMateToHljs"
+import { findLastIndex } from "../../../src/shared/array"
+import { McpServer } from "../../../src/shared/mcp"
+import { checkExistKey } from "../../../src/shared/checkExistApiConfig"
+import { Mode, CustomModePrompts, defaultModeSlug, defaultPrompts, ModeConfig } from "../../../src/shared/modes"
+import { CustomSupportPrompts } from "../../../src/shared/support-prompt"
+import { experimentDefault, ExperimentId } from "../../../src/shared/experiments"
+import { TelemetrySetting } from "../../../src/shared/TelemetrySetting"
+// No need to import CostOptimizationLevel as we're using string literals
 
 export interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
 	theme: any
 	mcpServers: McpServer[]
-	hasSystemPromptOverride?: boolean
 	currentCheckpoint?: string
 	filePaths: string[]
 	openedTabs: Array<{ label: string; isActive: boolean; path?: string }>
@@ -33,7 +33,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setAlwaysAllowModeSwitch: (value: boolean) => void
 	setAlwaysAllowSubtasks: (value: boolean) => void
 	setBrowserToolEnabled: (value: boolean) => void
-	setShowRooIgnoredFiles: (value: boolean) => void
+	setShowKodelyIgnoredFiles: (value: boolean) => void
 	setShowAnnouncement: (value: boolean) => void
 	setAllowedCommands: (value: string[]) => void
 	setSoundEnabled: (value: boolean) => void
@@ -87,6 +87,16 @@ export interface ExtensionStateContextType extends ExtensionState {
 	pinnedApiConfigs?: Record<string, boolean>
 	setPinnedApiConfigs: (value: Record<string, boolean>) => void
 	togglePinnedApiConfig: (configName: string) => void
+	optimizationLevel?: "low" | "balanced" | "high"
+	setOptimizationLevel: (value: "low" | "balanced" | "high") => void
+	maxContextWindowUsage?: number
+	setMaxContextWindowUsage: (value: number) => void
+	useLocalRag?: boolean
+	setUseLocalRag: (value: boolean) => void
+	maxOutputTokens?: number
+	setMaxOutputTokens: (value: number) => void
+	compressCodeInContext?: boolean
+	setCompressCodeInContext: (value: boolean) => void
 }
 
 export const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -156,13 +166,18 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		cwd: "",
 		browserToolEnabled: true,
 		telemetrySetting: "unset",
-		showRooIgnoredFiles: true, // Default to showing .rooignore'd files with lock symbol (current behavior).
+		showKodelyIgnoredFiles: true, // Default to showing .kodelyignore'd files with lock symbol (current behavior).
 		renderContext: "sidebar",
 		maxReadFileLine: 500, // Default max read file line limit
 		pinnedApiConfigs: {}, // Empty object for pinned API configs
 		terminalZshOhMy: false, // Default Oh My Zsh integration setting
 		terminalZshP10k: false, // Default Powerlevel10k integration setting
 		terminalZdotdir: false, // Default ZDOTDIR handling setting
+		optimizationLevel: "balanced", // Default cost optimization level
+		maxContextWindowUsage: 85, // Default max context window usage percentage
+		useLocalRag: true, // Default to using local RAG
+		maxOutputTokens: 2000, // Default max output tokens
+		compressCodeInContext: false, // Default to not compressing code in context
 	})
 
 	const [didHydrateState, setDidHydrateState] = useState(false)
@@ -311,11 +326,16 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		setMaxWorkspaceFiles: (value) => setState((prevState) => ({ ...prevState, maxWorkspaceFiles: value })),
 		setBrowserToolEnabled: (value) => setState((prevState) => ({ ...prevState, browserToolEnabled: value })),
 		setTelemetrySetting: (value) => setState((prevState) => ({ ...prevState, telemetrySetting: value })),
-		setShowRooIgnoredFiles: (value) => setState((prevState) => ({ ...prevState, showRooIgnoredFiles: value })),
+		setShowKodelyIgnoredFiles: (value) => setState((prevState) => ({ ...prevState, showKodelyIgnoredFiles: value })),
 		setRemoteBrowserEnabled: (value) => setState((prevState) => ({ ...prevState, remoteBrowserEnabled: value })),
 		setAwsUsePromptCache: (value) => setState((prevState) => ({ ...prevState, awsUsePromptCache: value })),
 		setMaxReadFileLine: (value) => setState((prevState) => ({ ...prevState, maxReadFileLine: value })),
 		setPinnedApiConfigs: (value) => setState((prevState) => ({ ...prevState, pinnedApiConfigs: value })),
+		setOptimizationLevel: (value) => setState((prevState) => ({ ...prevState, optimizationLevel: value })),
+		setMaxContextWindowUsage: (value) => setState((prevState) => ({ ...prevState, maxContextWindowUsage: value })),
+		setUseLocalRag: (value) => setState((prevState) => ({ ...prevState, useLocalRag: value })),
+		setMaxOutputTokens: (value) => setState((prevState) => ({ ...prevState, maxOutputTokens: value })),
+		setCompressCodeInContext: (value) => setState((prevState) => ({ ...prevState, compressCodeInContext: value })),
 		togglePinnedApiConfig: (configId) =>
 			setState((prevState) => {
 				const currentPinned = prevState.pinnedApiConfigs || {}

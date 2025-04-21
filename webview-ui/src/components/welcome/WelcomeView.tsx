@@ -1,14 +1,14 @@
 import { useCallback, useState } from "react"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
-import { useExtensionState } from "@src/context/ExtensionStateContext"
-import { validateApiConfiguration } from "@src/utils/validate"
-import { vscode } from "@src/utils/vscode"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { validateApiConfiguration } from "../../utils/validate"
+import { vscode } from "../../utils/vscode"
 import ApiOptions from "../settings/ApiOptions"
 import { Tab, TabContent } from "../common/Tab"
 import { Trans } from "react-i18next"
-import { useAppTranslation } from "@src/i18n/TranslationContext"
-import { getRequestyAuthUrl, getOpenRouterAuthUrl } from "@src/oauth/urls"
-import RooHero from "./RooHero"
+import { useAppTranslation } from "../../i18n/TranslationContext"
+import { getRequestyAuthUrl, getOpenRouterAuthUrl } from "../../oauth/urls"
+import KodelyHero from "./KodelyHero"
 import knuthShuffle from "knuth-shuffle-seeded"
 
 const WelcomeView = () => {
@@ -37,7 +37,7 @@ const WelcomeView = () => {
 	return (
 		<Tab>
 			<TabContent className="flex flex-col gap-5">
-				<RooHero />
+				<KodelyHero />
 
 				<div className="outline rounded p-4">
 					<Trans i18nKey="welcome:introduction" />

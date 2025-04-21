@@ -2,7 +2,7 @@ import { useAppTranslation } from "@/i18n/TranslationContext"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui"
 
-import { GlobalSettings } from "@roo/schemas"
+import { GlobalSettings } from "../../../../src/schemas"
 
 type AutoApproveToggles = Pick<
 	GlobalSettings,

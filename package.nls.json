@@ -1,9 +1,9 @@
 {
-	"extension.displayName": "Roo Code (prev. Roo Cline)",
-	"extension.description": "A whole dev team of AI agents in your editor.",
-	"views.contextMenu.label": "Roo Code",
-	"views.terminalMenu.label": "Roo Code",
-	"views.activitybar.title": "Roo Code",
+	"extension.displayName": "Kodely",
+	"extension.description": "A cost-efficient AI coding assistant that optimizes your LLM usage.",
+	"views.contextMenu.label": "Kodely",
+	"views.terminalMenu.label": "Kodely",
+	"views.activitybar.title": "Kodely",
 	"command.newTask.title": "New Task",
 	"command.mcpServers.title": "MCP Servers",
 	"command.prompts.title": "Prompts",
@@ -24,10 +24,15 @@
 	"command.terminal.fixCommandInCurrentTask.title": "Fix This Command (Current Task)",
 	"command.terminal.explainCommandInCurrentTask.title": "Explain This Command (Current Task)",
 	"command.acceptInput.title": "Accept Input/Suggestion",
-	"configuration.title": "Roo Code",
+	"configuration.title": "Kodely",
 	"commands.allowedCommands.description": "Commands that can be auto-executed when 'Always approve execute operations' is enabled",
 	"settings.vsCodeLmModelSelector.description": "Settings for VSCode Language Model API",
 	"settings.vsCodeLmModelSelector.vendor.description": "The vendor of the language model (e.g. copilot)",
 	"settings.vsCodeLmModelSelector.family.description": "The family of the language model (e.g. gpt-4)",
-	"settings.customStoragePath.description": "Custom storage path. Leave empty to use the default location. Supports absolute paths (e.g. 'D:\\RooCodeStorage')"
+	"settings.customStoragePath.description": "Custom storage path. Leave empty to use the default location. Supports absolute paths (e.g. 'D:\\KodelyStorage')",
+	"settings.costOptimization.level.description": "Set the optimization level to balance between cost efficiency and quality. 'cost_focused' prioritizes minimizing token usage, 'balanced' maintains a balance, and 'quality_focused' prioritizes thoroughness.",
+	"settings.costOptimization.maxContextWindowUsage.description": "Percentage of the model's context window to use. Lower values reduce token usage and costs.",
+	"settings.costOptimization.useLocalRag.description": "Use local Retrieval Augmented Generation to efficiently retrieve relevant context without sending all code to the LLM.",
+	"settings.costOptimization.maxOutputTokens.description": "Maximum number of tokens to generate in a response. Lower values reduce costs.",
+	"settings.costOptimization.compressCodeInContext.description": "Compress code snippets in the context window to reduce token usage. May affect quality."
 }

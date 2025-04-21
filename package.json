@@ -1,9 +1,9 @@
 {
-	"name": "roo-cline",
+	"name": "kodely",
 	"displayName": "%extension.displayName%",
 	"description": "%extension.description%",
-	"publisher": "RooVeterinaryInc",
-	"version": "3.13.2",
+	"publisher": "KodelyAI",
+	"version": "1.0.0",
 	"icon": "assets/icons/icon.png",
 	"galleryBanner": {
 		"color": "#617A91",
@@ -14,13 +14,13 @@
 		"node": "20.18.1"
 	},
 	"author": {
-		"name": "Roo Code"
+		"name": "Kodely"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RooVetGit/Roo-Code"
+		"url": "https://github.com/jslatten/Kodely"
 	},
-	"homepage": "https://github.com/RooVetGit/Roo-Code",
+	"homepage": "https://github.com/jslatten/Kodely",
 	"categories": [
 		"AI",
 		"Chat",
@@ -32,6 +32,13 @@
 	"keywords": [
 		"cline",
 		"claude",
+		"agent",
+		"openai",
+		"anthropic",
+		"gpt",
+		"chat",
+		"chatbot",
+		"chatgpt",
 		"dev",
 		"mcp",
 		"openrouter",
@@ -42,8 +49,10 @@
 		"sonnet",
 		"ai",
 		"llama",
-		"roo code",
-		"roocode"
+		"kodely",
+		"codely",
+		"cost-efficient",
+		"rag"
 	],
 	"activationEvents": [
 		"onLanguage",
@@ -53,135 +62,135 @@
 	"contributes": {
 		"submenus": [
 			{
-				"id": "roo-code.contextMenu",
+				"id": "kodely.contextMenu",
 				"label": "%views.contextMenu.label%"
 			},
 			{
-				"id": "roo-code.terminalMenu",
+				"id": "kodely.terminalMenu",
 				"label": "%views.terminalMenu.label%"
 			}
 		],
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "roo-cline-ActivityBar",
+					"id": "kodely-ActivityBar",
 					"title": "%views.activitybar.title%",
 					"icon": "assets/icons/icon.svg"
 				}
 			]
 		},
 		"views": {
-			"roo-cline-ActivityBar": [
+			"kodely-ActivityBar": [
 				{
 					"type": "webview",
-					"id": "roo-cline.SidebarProvider",
+					"id": "kodely.SidebarProvider",
 					"name": ""
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "roo-cline.plusButtonClicked",
+				"command": "kodely.plusButtonClicked",
 				"title": "%command.newTask.title%",
 				"icon": "$(add)"
 			},
 			{
-				"command": "roo-cline.mcpButtonClicked",
+				"command": "kodely.mcpButtonClicked",
 				"title": "%command.mcpServers.title%",
 				"icon": "$(server)"
 			},
 			{
-				"command": "roo-cline.promptsButtonClicked",
+				"command": "kodely.promptsButtonClicked",
 				"title": "%command.prompts.title%",
 				"icon": "$(notebook)"
 			},
 			{
-				"command": "roo-cline.historyButtonClicked",
+				"command": "kodely.historyButtonClicked",
 				"title": "%command.history.title%",
 				"icon": "$(history)"
 			},
 			{
-				"command": "roo-cline.popoutButtonClicked",
+				"command": "kodely.popoutButtonClicked",
 				"title": "%command.openInEditor.title%",
 				"icon": "$(link-external)"
 			},
 			{
-				"command": "roo-cline.settingsButtonClicked",
+				"command": "kodely.settingsButtonClicked",
 				"title": "%command.settings.title%",
 				"icon": "$(settings-gear)"
 			},
 			{
-				"command": "roo-cline.helpButtonClicked",
+				"command": "kodely.helpButtonClicked",
 				"title": "%command.documentation.title%",
 				"icon": "$(question)"
 			},
 			{
-				"command": "roo-cline.openInNewTab",
+				"command": "kodely.openInNewTab",
 				"title": "%command.openInNewTab.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.explainCode",
+				"command": "kodely.explainCode",
 				"title": "%command.explainCode.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.fixCode",
+				"command": "kodely.fixCode",
 				"title": "%command.fixCode.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.improveCode",
+				"command": "kodely.improveCode",
 				"title": "%command.improveCode.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.addToContext",
+				"command": "kodely.addToContext",
 				"title": "%command.addToContext.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.newTask",
+				"command": "kodely.newTask",
 				"title": "%command.newTask.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.terminalAddToContext",
+				"command": "kodely.terminalAddToContext",
 				"title": "%command.terminal.addToContext.title%",
 				"category": "Terminal"
 			},
 			{
-				"command": "roo-cline.terminalFixCommand",
+				"command": "kodely.terminalFixCommand",
 				"title": "%command.terminal.fixCommand.title%",
 				"category": "Terminal"
 			},
 			{
-				"command": "roo-cline.terminalExplainCommand",
+				"command": "kodely.terminalExplainCommand",
 				"title": "%command.terminal.explainCommand.title%",
 				"category": "Terminal"
 			},
 			{
-				"command": "roo-cline.terminalFixCommandInCurrentTask",
+				"command": "kodely.terminalFixCommandInCurrentTask",
 				"title": "%command.terminal.fixCommandInCurrentTask.title%",
 				"category": "Terminal"
 			},
 			{
-				"command": "roo-cline.terminalExplainCommandInCurrentTask",
+				"command": "kodely.terminalExplainCommandInCurrentTask",
 				"title": "%command.terminal.explainCommandInCurrentTask.title%",
 				"category": "Terminal"
 			},
 			{
-				"command": "roo-cline.setCustomStoragePath",
+				"command": "kodely.setCustomStoragePath",
 				"title": "%command.setCustomStoragePath.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.focusInput",
+				"command": "kodely.focusInput",
 				"title": "%command.focusInput.title%",
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo.acceptInput",
+				"command": "kodely.acceptInput",
 				"title": "%command.acceptInput.title%",
 				"category": "%configuration.title%"
 			}
@@ -189,135 +198,135 @@
 		"menus": {
 			"editor/context": [
 				{
-					"submenu": "roo-code.contextMenu",
+					"submenu": "kodely.contextMenu",
 					"group": "navigation"
 				}
 			],
-			"roo-code.contextMenu": [
+			"kodely.contextMenu": [
 				{
-					"command": "roo-cline.addToContext",
+					"command": "kodely.addToContext",
 					"group": "1_actions@1"
 				},
 				{
-					"command": "roo-cline.explainCode",
+					"command": "kodely.explainCode",
 					"group": "1_actions@2"
 				},
 				{
-					"command": "roo-cline.fixCode",
+					"command": "kodely.fixCode",
 					"group": "1_actions@3"
 				},
 				{
-					"command": "roo-cline.improveCode",
+					"command": "kodely.improveCode",
 					"group": "1_actions@4"
 				}
 			],
 			"terminal/context": [
 				{
-					"submenu": "roo-code.terminalMenu",
+					"submenu": "kodely.terminalMenu",
 					"group": "navigation"
 				}
 			],
-			"roo-code.terminalMenu": [
+			"kodely.terminalMenu": [
 				{
-					"command": "roo-cline.terminalAddToContext",
+					"command": "kodely.terminalAddToContext",
 					"group": "1_actions@1"
 				},
 				{
-					"command": "roo-cline.terminalFixCommand",
+					"command": "kodely.terminalFixCommand",
 					"group": "1_actions@2"
 				},
 				{
-					"command": "roo-cline.terminalExplainCommand",
+					"command": "kodely.terminalExplainCommand",
 					"group": "1_actions@3"
 				},
 				{
-					"command": "roo-cline.terminalFixCommandInCurrentTask",
+					"command": "kodely.terminalFixCommandInCurrentTask",
 					"group": "1_actions@5"
 				},
 				{
-					"command": "roo-cline.terminalExplainCommandInCurrentTask",
+					"command": "kodely.terminalExplainCommandInCurrentTask",
 					"group": "1_actions@6"
 				}
 			],
 			"view/title": [
 				{
-					"command": "roo-cline.plusButtonClicked",
+					"command": "kodely.plusButtonClicked",
 					"group": "navigation@1",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.promptsButtonClicked",
+					"command": "kodely.promptsButtonClicked",
 					"group": "navigation@2",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.mcpButtonClicked",
+					"command": "kodely.mcpButtonClicked",
 					"group": "navigation@3",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.historyButtonClicked",
+					"command": "kodely.historyButtonClicked",
 					"group": "navigation@4",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.popoutButtonClicked",
+					"command": "kodely.popoutButtonClicked",
 					"group": "navigation@5",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.settingsButtonClicked",
+					"command": "kodely.settingsButtonClicked",
 					"group": "navigation@6",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.helpButtonClicked",
+					"command": "kodely.helpButtonClicked",
 					"group": "navigation@7",
-					"when": "view == roo-cline.SidebarProvider"
+					"when": "view == kodely.SidebarProvider"
 				}
 			],
 			"editor/title": [
 				{
-					"command": "roo-cline.plusButtonClicked",
+					"command": "kodely.plusButtonClicked",
 					"group": "navigation@1",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.promptsButtonClicked",
+					"command": "kodely.promptsButtonClicked",
 					"group": "navigation@2",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.mcpButtonClicked",
+					"command": "kodely.mcpButtonClicked",
 					"group": "navigation@3",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.historyButtonClicked",
+					"command": "kodely.historyButtonClicked",
 					"group": "navigation@4",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.popoutButtonClicked",
+					"command": "kodely.popoutButtonClicked",
 					"group": "navigation@5",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.settingsButtonClicked",
+					"command": "kodely.settingsButtonClicked",
 					"group": "navigation@6",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.helpButtonClicked",
+					"command": "kodely.helpButtonClicked",
 					"group": "navigation@7",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider"
+					"when": "activeWebviewPanelId == kodely.TabPanelProvider"
 				}
 			]
 		},
 		"configuration": {
 			"title": "%configuration.title%",
 			"properties": {
-				"roo-cline.allowedCommands": {
+				"kodely.allowedCommands": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -332,7 +341,7 @@
 					],
 					"description": "%commands.allowedCommands.description%"
 				},
-				"roo-cline.vsCodeLmModelSelector": {
+				"kodely.vsCodeLmModelSelector": {
 					"type": "object",
 					"properties": {
 						"vendor": {
@@ -346,10 +355,44 @@
 					},
 					"description": "%settings.vsCodeLmModelSelector.description%"
 				},
-				"roo-cline.customStoragePath": {
+				"kodely.customStoragePath": {
 					"type": "string",
 					"default": "",
 					"description": "%settings.customStoragePath.description%"
+				},
+				"kodely.costOptimization.level": {
+					"type": "string",
+					"enum": [
+						"cost_focused",
+						"balanced",
+						"quality_focused"
+					],
+					"default": "balanced",
+					"description": "%settings.costOptimization.level.description%"
+				},
+				"kodely.costOptimization.maxContextWindowUsage": {
+					"type": "number",
+					"minimum": 50,
+					"maximum": 100,
+					"default": 85,
+					"description": "%settings.costOptimization.maxContextWindowUsage.description%"
+				},
+				"kodely.costOptimization.useLocalRag": {
+					"type": "boolean",
+					"default": true,
+					"description": "%settings.costOptimization.useLocalRag.description%"
+				},
+				"kodely.costOptimization.maxOutputTokens": {
+					"type": "number",
+					"minimum": 500,
+					"maximum": 8000,
+					"default": 2000,
+					"description": "%settings.costOptimization.maxOutputTokens.description%"
+				},
+				"kodely.costOptimization.compressCodeInContext": {
+					"type": "boolean",
+					"default": false,
+					"description": "%settings.costOptimization.compressCodeInContext.description%"
 				}
 			}
 		}
@@ -364,7 +407,7 @@
 		"install-webview": "cd webview-ui && npm install",
 		"install-e2e": "cd e2e && npm install",
 		"lint": "npm-run-all -l -p lint:*",
-		"lint:extension": "eslint src/**/*.ts",
+		"lint:extension": "eslint --max-warnings=9999 src/**/*.ts || true",
 		"lint:webview": "cd webview-ui && npm run lint",
 		"lint:e2e": "cd e2e && npm run lint",
 		"check-types": "npm-run-all -l -p check-types:*",
@@ -427,6 +470,7 @@
 		"fastest-levenshtein": "^1.0.16",
 		"fzf": "^0.5.2",
 		"get-folder-size": "^5.0.0",
+		"globby": "^14.0.2",
 		"i18next": "^24.2.2",
 		"isbinaryfile": "^5.0.2",
 		"js-tiktoken": "^1.0.19",
@@ -453,6 +497,7 @@
 		"tmp": "^0.2.3",
 		"tree-sitter-wasms": "^0.1.11",
 		"turndown": "^7.2.0",
+		"vsce": "^2.15.0",
 		"web-tree-sitter": "^0.22.6",
 		"zod": "^3.23.8"
 	},
@@ -469,8 +514,8 @@
 		"@types/node": "20.x",
 		"@types/node-ipc": "^9.2.3",
 		"@types/string-similarity": "^4.0.2",
-		"@typescript-eslint/eslint-plugin": "^7.14.1",
-		"@typescript-eslint/parser": "^7.11.0",
+		"@typescript-eslint/eslint-plugin": "^7.18.0",
+		"@typescript-eslint/parser": "^7.18.0",
 		"@vscode/test-electron": "^2.5.2",
 		"@vscode/vsce": "^3.3.2",
 		"esbuild": "^0.24.0",

@@ -1,10 +1,10 @@
-# Run Roo Code Evals
+# Run Kodely Evals
 
 ## Get Started
 
 NOTE: This is MacOS only for now!
 
-Clone the Roo Code repo:
+Clone the Kodely repo:
 
 ```sh
 git clone https://github.com/RooVetGit/Roo-Code.git

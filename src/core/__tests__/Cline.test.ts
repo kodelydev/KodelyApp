@@ -12,8 +12,17 @@ import { ClineProvider } from "../webview/ClineProvider"
 import { ApiConfiguration, ModelInfo } from "../../shared/api"
 import { ApiStreamChunk } from "../../api/transform/stream"
 
-// Mock RooIgnoreController
-jest.mock("../ignore/RooIgnoreController")
+// Mock KodelyIgnoreController
+jest.mock("../ignore/KodelyIgnoreController", () => ({
+	KodelyIgnoreController: jest.fn().mockImplementation(() => ({
+		initialize: jest.fn().mockResolvedValue(undefined),
+		validateAccess: jest.fn().mockReturnValue(true),
+		validateCommand: jest.fn().mockReturnValue(undefined),
+		filterPaths: jest.fn().mockImplementation((paths) => paths),
+		getInstructions: jest.fn().mockReturnValue(undefined),
+		dispose: jest.fn(),
+	}))
+}))
 
 // Mock storagePathManager to prevent dynamic import issues
 jest.mock("../../shared/storagePathManager", () => ({
@@ -367,31 +376,7 @@ describe("Cline", () => {
 		})
 
 		describe("API conversation handling", () => {
-			/**
-			 * Mock environment details retrieval to avoid filesystem access in tests
-			 *
-			 * This setup:
-			 * 1. Prevents file listing operations that might cause test instability
-			 * 2. Preserves test-specific mocks when they exist (via _mockGetEnvironmentDetails)
-			 * 3. Provides a stable, empty environment by default
-			 */
-			beforeEach(() => {
-				// Mock the method with a stable implementation
-				jest.spyOn(Cline.prototype, "getEnvironmentDetails").mockImplementation(
-					// Use 'any' type to allow for dynamic test properties
-					async function (this: any, verbose: boolean = false): Promise<string> {
-						// Use test-specific mock if available
-						if (this._mockGetEnvironmentDetails) {
-							return this._mockGetEnvironmentDetails()
-						}
-						// Default to empty environment details for stability
-						return ""
-					},
-				)
-			})
-
 			it("should clean conversation history before sending to API", async () => {
-				// Cline.create will now use our mocked getEnvironmentDetails
 				const [cline, task] = Cline.create({
 					provider: mockProvider,
 					apiConfiguration: mockApiConfig,

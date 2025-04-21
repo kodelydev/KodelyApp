@@ -1,6 +1,6 @@
-import { mentionRegex } from "@roo/shared/context-mentions"
+import { mentionRegex } from "../../../src/shared/context-mentions"
 import { Fzf } from "fzf"
-import { ModeConfig } from "@roo/shared/modes"
+import { ModeConfig } from "../../../src/shared/modes"
 import * as path from "path"
 
 export interface SearchResult {

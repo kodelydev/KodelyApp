@@ -4,7 +4,7 @@ import { vscode } from "@/utils/vscode"
 import { formatLargeNumber, formatDate } from "@/utils/format"
 import { Button } from "@/components/ui"
 
-import { useAppTranslation } from "@src/i18n/TranslationContext"
+import { useAppTranslation } from "../../i18n/TranslationContext"
 import { CopyButton } from "./CopyButton"
 import { useTaskSearch } from "./useTaskSearch"
 
@@ -39,7 +39,7 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 								components={{
 									DocsLink: (
 										<a
-											href="https://docs.roocode.com/getting-started/your-first-task"
+											href="https://docs.kodelyai.com/getting-started/your-first-task"
 											target="_blank"
 											rel="noopener noreferrer">
 											the docs

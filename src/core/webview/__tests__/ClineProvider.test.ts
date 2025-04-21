@@ -413,7 +413,7 @@ describe("ClineProvider", () => {
 			maxWorkspaceFiles: 200,
 			browserToolEnabled: true,
 			telemetrySetting: "unset",
-			showRooIgnoredFiles: true,
+			showKodelyIgnoredFiles: true,
 			renderContext: "sidebar",
 			maxReadFileLine: 500,
 		}
@@ -700,24 +700,24 @@ describe("ClineProvider", () => {
 		expect(state.browserToolEnabled).toBe(true) // Default value should be true
 	})
 
-	test("handles showRooIgnoredFiles setting", async () => {
+	test("handles showKodelyIgnoredFiles setting", async () => {
 		await provider.resolveWebviewView(mockWebviewView)
 		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as jest.Mock).mock.calls[0][0]
 
 		// Default value should be true
-		expect((await provider.getState()).showRooIgnoredFiles).toBe(true)
+		expect((await provider.getState()).showKodelyIgnoredFiles).toBe(true)
 
-		// Test showRooIgnoredFiles with true
-		await messageHandler({ type: "showRooIgnoredFiles", bool: true })
+		// Test showKodelyIgnoredFiles with true
+		await messageHandler({ type: "showKodelyIgnoredFiles", bool: true })
 		expect(mockContext.globalState.update).toHaveBeenCalledWith("showRooIgnoredFiles", true)
 		expect(mockPostMessage).toHaveBeenCalled()
-		expect((await provider.getState()).showRooIgnoredFiles).toBe(true)
+		expect((await provider.getState()).showKodelyIgnoredFiles).toBe(true)
 
-		// Test showRooIgnoredFiles with false
-		await messageHandler({ type: "showRooIgnoredFiles", bool: false })
+		// Test showKodelyIgnoredFiles with false
+		await messageHandler({ type: "showKodelyIgnoredFiles", bool: false })
 		expect(mockContext.globalState.update).toHaveBeenCalledWith("showRooIgnoredFiles", false)
 		expect(mockPostMessage).toHaveBeenCalled()
-		expect((await provider.getState()).showRooIgnoredFiles).toBe(false)
+		expect((await provider.getState()).showKodelyIgnoredFiles).toBe(false)
 	})
 
 	test("handles request delay settings messages", async () => {

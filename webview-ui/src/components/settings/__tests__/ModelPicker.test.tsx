@@ -5,7 +5,7 @@ import { act } from "react"
 
 import { ModelPicker } from "../ModelPicker"
 
-jest.mock("@src/context/ExtensionStateContext", () => ({
+jest.mock("../../../context/ExtensionStateContext", () => ({
 	useExtensionState: jest.fn(),
 }))
 

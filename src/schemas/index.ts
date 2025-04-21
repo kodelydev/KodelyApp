@@ -506,6 +506,13 @@ export const globalSettingsSchema = z.object({
 	customInstructions: z.string().optional(),
 	taskHistory: z.array(historyItemSchema).optional(),
 
+	// Cost optimization settings
+	optimizationLevel: z.enum(["low", "balanced", "high"]).optional(),
+	maxContextWindowUsage: z.number().min(10).max(100).optional(),
+	useLocalRag: z.boolean().optional(),
+	maxOutputTokens: z.number().min(100).max(10000).optional(),
+	compressCodeInContext: z.boolean().optional(),
+
 	autoApprovalEnabled: z.boolean().optional(),
 	alwaysAllowReadOnly: z.boolean().optional(),
 	alwaysAllowReadOnlyOutsideWorkspace: z.boolean().optional(),
@@ -581,6 +588,13 @@ const globalSettingsRecord: GlobalSettingsRecord = {
 	lastShownAnnouncementId: undefined,
 	customInstructions: undefined,
 	taskHistory: undefined,
+
+	// Cost optimization settings
+	optimizationLevel: undefined,
+	maxContextWindowUsage: undefined,
+	useLocalRag: undefined,
+	maxOutputTokens: undefined,
+	compressCodeInContext: undefined,
 
 	autoApprovalEnabled: undefined,
 	alwaysAllowReadOnly: undefined,
@@ -764,7 +778,7 @@ export const clineSays = [
 	"new_task",
 	"subtask_result",
 	"checkpoint_saved",
-	"rooignore_error",
+	"kodelyignore_error",
 	"diff_error",
 ] as const
 

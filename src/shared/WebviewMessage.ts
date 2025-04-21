@@ -117,7 +117,7 @@ export interface WebviewMessage {
 		| "humanRelayCancel"
 		| "browserToolEnabled"
 		| "telemetrySetting"
-		| "showRooIgnoredFiles"
+		| "showKodelyIgnoredFiles"
 		| "testBrowserConnection"
 		| "browserConnectionResult"
 		| "remoteBrowserEnabled"
@@ -125,6 +125,11 @@ export interface WebviewMessage {
 		| "maxReadFileLine"
 		| "searchFiles"
 		| "toggleApiConfigPin"
+		| "optimizationLevel"
+		| "maxContextWindowUsage"
+		| "useLocalRag"
+		| "maxOutputTokens"
+		| "compressCodeInContext"
 	text?: string
 	disabled?: boolean
 	askResponse?: ClineAskResponse
@@ -150,7 +155,6 @@ export interface WebviewMessage {
 	source?: "global" | "project"
 	requestId?: string
 	ids?: string[]
-	hasSystemPromptOverride?: boolean
 }
 
 export const checkoutDiffPayloadSchema = z.object({

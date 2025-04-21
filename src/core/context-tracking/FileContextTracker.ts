@@ -9,16 +9,16 @@ import type { FileMetadataEntry, RecordSource, TaskMetadata } from "./FileContex
 import { ClineProvider } from "../webview/ClineProvider"
 
 // This class is responsible for tracking file operations that may result in stale context.
-// If a user modifies a file outside of Roo, the context may become stale and need to be updated.
-// We do not want Roo to reload the context every time a file is modified, so we use this class merely
-// to inform Roo that the change has occurred, and tell Roo to reload the file before making
+// If a user modifies a file outside of Kodely, the context may become stale and need to be updated.
+// We do not want Kodely to reload the context every time a file is modified, so we use this class merely
+// to inform Kodely that the change has occurred, and tell Kodely to reload the file before making
 // any changes to it. This fixes an issue with diff editing, where Roo was unable to complete a diff edit.
 
 // FileContextTracker
 //
 // This class is responsible for tracking file operations.
-// If the full contents of a file are passed to Roo via a tool, mention, or edit, the file is marked as active.
-// If a file is modified outside of Roo, we detect and track this change to prevent stale context.
+// If the full contents of a file are passed to Kodely via a tool, mention, or edit, the file is marked as active.
+// If a file is modified outside of Kodely, we detect and track this change to prevent stale context.
 export class FileContextTracker {
 	readonly taskId: string
 	private providerRef: WeakRef<ClineProvider>

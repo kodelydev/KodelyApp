@@ -10,7 +10,7 @@ import {
 	VSCodeRadio,
 } from "@vscode/webview-ui-toolkit/react"
 
-import { useExtensionState } from "@src/context/ExtensionStateContext"
+import { useExtensionState } from "../../context/ExtensionStateContext"
 import {
 	Mode,
 	PromptComponent,
@@ -19,15 +19,15 @@ import {
 	getAllModes,
 	ModeConfig,
 	GroupEntry,
-} from "@roo/shared/modes"
-import { modeConfigSchema } from "@roo/schemas"
-import { supportPrompt, SupportPromptType } from "@roo/shared/support-prompt"
+} from "../../../../src/shared/modes"
+import { modeConfigSchema } from "../../../../src/schemas"
+import { supportPrompt, SupportPromptType } from "../../../../src/shared/support-prompt"
 
-import { TOOL_GROUPS, ToolGroup } from "@roo/shared/tools"
-import { vscode } from "@src/utils/vscode"
+import { TOOL_GROUPS, ToolGroup } from "../../../../src/shared/tools"
+import { vscode } from "../../utils/vscode"
 import { Tab, TabContent, TabHeader } from "../common/Tab"
 import i18next from "i18next"
-import { useAppTranslation } from "@src/i18n/TranslationContext"
+import { useAppTranslation } from "../../i18n/TranslationContext"
 import { Trans } from "react-i18next"
 
 // Get all available groups that should show in prompts view

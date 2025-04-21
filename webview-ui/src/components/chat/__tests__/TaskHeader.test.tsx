@@ -3,7 +3,7 @@
 import React from "react"
 import { render, screen } from "@testing-library/react"
 import TaskHeader from "../TaskHeader"
-import { ApiConfiguration } from "@roo/shared/api"
+import { ApiConfiguration } from "../../../../../src/shared/api"
 
 // Mock the vscode API
 jest.mock("@/utils/vscode", () => ({
@@ -18,7 +18,7 @@ jest.mock("@vscode/webview-ui-toolkit/react", () => ({
 }))
 
 // Mock the ExtensionStateContext
-jest.mock("@src/context/ExtensionStateContext", () => ({
+jest.mock("../../../context/ExtensionStateContext", () => ({
 	useExtensionState: () => ({
 		apiConfiguration: {
 			apiProvider: "anthropic",

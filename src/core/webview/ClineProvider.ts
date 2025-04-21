@@ -12,6 +12,8 @@ import * as vscode from "vscode"
 import { GlobalState, ProviderSettings, RooCodeSettings } from "../../schemas"
 import { t } from "../../i18n"
 import { setPanel } from "../../activate/registerCommands"
+import { CostOptimizationManager, CostOptimizationLevel } from "../cost-optimization/CostOptimizationManager"
+import { LocalRagService } from "../cost-optimization/LocalRagService"
 import {
 	ApiConfiguration,
 	ApiProvider,
@@ -49,7 +51,6 @@ import { ACTION_NAMES } from "../CodeActionProvider"
 import { Cline, ClineOptions } from "../Cline"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
-import { getSystemPromptFilePath } from "../prompts/sections/custom-system-prompt"
 import { telemetryService } from "../../services/telemetry/TelemetryService"
 import { getWorkspacePath } from "../../utils/path"
 import { webviewMessageHandler } from "./webviewMessageHandler"
@@ -65,8 +66,8 @@ export type ClineProviderEvents = {
 }
 
 export class ClineProvider extends EventEmitter<ClineProviderEvents> implements vscode.WebviewViewProvider {
-	public static readonly sideBarId = "roo-cline.SidebarProvider" // used in package.json as the view's id. This value cannot be changed due to how vscode caches views based on their id, and updating the id would break existing instances of the extension.
-	public static readonly tabPanelId = "roo-cline.TabPanelProvider"
+	public static readonly sideBarId = "kodely.SidebarProvider" // used in package.json as the view's id
+	public static readonly tabPanelId = "kodely.TabPanelProvider"
 	private static activeInstances: Set<ClineProvider> = new Set()
 	private disposables: vscode.Disposable[] = []
 	private view?: vscode.WebviewView | vscode.WebviewPanel
@@ -79,10 +80,12 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 
 	public isViewLaunched = false
 	public settingsImportedAt?: number
-	public readonly latestAnnouncementId = "apr-18-2025-3-13" // Update for v3.13.0 announcement
+	public readonly latestAnnouncementId = "kodely-launch-2025" // Update for Kodely launch announcement
 	public readonly contextProxy: ContextProxy
 	public readonly providerSettingsManager: ProviderSettingsManager
 	public readonly customModesManager: CustomModesManager
+	public readonly costOptimizationManager: CostOptimizationManager
+	public readonly localRagService: LocalRagService
 
 	constructor(
 		readonly context: vscode.ExtensionContext,
@@ -116,6 +119,22 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			.catch((error) => {
 				this.log(`Failed to initialize MCP Hub: ${error}`)
 			})
+
+		// Initialize cost optimization manager
+		this.costOptimizationManager = new CostOptimizationManager(this.context)
+
+		// Initialize local RAG service
+		this.localRagService = new LocalRagService(this.context)
+		this.localRagService.initialize().catch(error => {
+			this.log(`Failed to initialize Local RAG service: ${error}`)
+		})
+
+		// Index workspace files for RAG if workspace folders exist
+		if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+			this.localRagService.indexWorkspace(vscode.workspace.workspaceFolders).catch(error => {
+				this.log(`Error indexing workspace: ${error}`)
+			})
+		}
 	}
 
 	// Adds a new Cline instance to clineStack, marking the start of a new task.
@@ -367,11 +386,27 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 				terminalZshP10k,
 				terminalPowershellCounter,
 				terminalZdotdir,
+				optimizationLevel,
+				maxContextWindowUsage,
+				useLocalRag,
+				maxOutputTokens,
+				compressCodeInContext,
 			}) => {
 				setSoundEnabled(soundEnabled ?? false)
 				Terminal.setShellIntegrationTimeout(
 					terminalShellIntegrationTimeout ?? TERMINAL_SHELL_INTEGRATION_TIMEOUT,
 				)
+
+				// Update cost optimization settings
+				if (optimizationLevel) {
+					this.costOptimizationManager.updateSettings({
+						optimizationLevel,
+						maxContextWindowUsage: maxContextWindowUsage ?? 85,
+						useLocalRag: useLocalRag ?? true,
+						maxOutputTokens: maxOutputTokens ?? 2000,
+						compressCodeInContext: compressCodeInContext ?? false
+					})
+				}
 				Terminal.setCommandDelay(terminalCommandDelay ?? 0)
 				Terminal.setTerminalZshClearEolMark(terminalZshClearEolMark ?? true)
 				Terminal.setTerminalZshOhMy(terminalZshOhMy ?? false)
@@ -656,9 +691,9 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 					<link rel="stylesheet" type="text/css" href="${stylesUri}">
 					<link href="${codiconsUri}" rel="stylesheet" />
 					<script nonce="${nonce}">
-						window.IMAGES_BASE_URI = "${imagesUri}"					
+						window.IMAGES_BASE_URI = "${imagesUri}"
 					</script>
-					<title>Roo Code</title>
+					<title>Kodely</title>
 				</head>
 				<body>
 					<div id="root"></div>
@@ -743,7 +778,7 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			<script nonce="${nonce}">
 				window.IMAGES_BASE_URI = "${imagesUri}"
 			</script>
-            <title>Roo Code</title>
+            <title>Kodely</title>
           </head>
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -1162,14 +1197,6 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 		this.postMessageToWebview({ type: "state", state })
 	}
 
-	/**
-	 * Checks if there is a file-based system prompt override for the given mode
-	 */
-	async hasFileBasedSystemPromptOverride(mode: Mode): Promise<boolean> {
-		const promptFilePath = getSystemPromptFilePath(this.cwd, mode)
-		return await fileExistsAtPath(promptFilePath)
-	}
-
 	async getStateToPostToWebview() {
 		const {
 			apiConfiguration,
@@ -1223,19 +1250,20 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			maxWorkspaceFiles,
 			browserToolEnabled,
 			telemetrySetting,
-			showRooIgnoredFiles,
+			showKodelyIgnoredFiles,
 			language,
 			maxReadFileLine,
+			optimizationLevel,
+			maxContextWindowUsage,
+			useLocalRag,
+			maxOutputTokens,
+			compressCodeInContext,
 		} = await this.getState()
 
 		const telemetryKey = process.env.POSTHOG_API_KEY
 		const machineId = vscode.env.machineId
 		const allowedCommands = vscode.workspace.getConfiguration("roo-cline").get<string[]>("allowedCommands") || []
 		const cwd = this.cwd
-
-		// Check if there's a system prompt override for the current mode
-		const currentMode = mode ?? defaultModeSlug
-		const hasSystemPromptOverride = await this.hasFileBasedSystemPromptOverride(currentMode)
 
 		return {
 			version: this.context.extension?.packageJSON?.version ?? "",
@@ -1304,12 +1332,11 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			telemetrySetting,
 			telemetryKey,
 			machineId,
-			showRooIgnoredFiles: showRooIgnoredFiles ?? true,
+			showKodelyIgnoredFiles: showKodelyIgnoredFiles ?? true,
 			language,
 			renderContext: this.renderContext,
 			maxReadFileLine: maxReadFileLine ?? 500,
 			settingsImportedAt: this.settingsImportedAt,
-			hasSystemPromptOverride,
 		}
 	}
 
@@ -1380,6 +1407,11 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			enableMcpServerCreation: stateValues.enableMcpServerCreation ?? true,
 			alwaysApproveResubmit: stateValues.alwaysApproveResubmit ?? false,
 			requestDelaySeconds: Math.max(5, stateValues.requestDelaySeconds ?? 10),
+			optimizationLevel: (stateValues.optimizationLevel as unknown as CostOptimizationLevel) ?? CostOptimizationLevel.BALANCED,
+			maxContextWindowUsage: stateValues.maxContextWindowUsage ?? 85,
+			useLocalRag: stateValues.useLocalRag ?? true,
+			maxOutputTokens: stateValues.maxOutputTokens ?? 2000,
+			compressCodeInContext: stateValues.compressCodeInContext ?? false,
 			currentApiConfigName: stateValues.currentApiConfigName ?? "default",
 			listApiConfigMeta: stateValues.listApiConfigMeta ?? [],
 			pinnedApiConfigs: stateValues.pinnedApiConfigs ?? {},
@@ -1395,7 +1427,7 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			openRouterUseMiddleOutTransform: stateValues.openRouterUseMiddleOutTransform ?? true,
 			browserToolEnabled: stateValues.browserToolEnabled ?? true,
 			telemetrySetting: stateValues.telemetrySetting || "unset",
-			showRooIgnoredFiles: stateValues.showRooIgnoredFiles ?? true,
+			showKodelyIgnoredFiles: stateValues.showRooIgnoredFiles ?? true,
 			maxReadFileLine: stateValues.maxReadFileLine ?? 500,
 		}
 	}

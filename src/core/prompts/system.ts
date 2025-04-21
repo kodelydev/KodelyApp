@@ -26,6 +26,7 @@ import {
 } from "./sections"
 import { loadSystemPromptFile } from "./sections/custom-system-prompt"
 import { formatLanguage } from "../../shared/language"
+import { CostOptimizationLevel } from "../cost-optimization/CostOptimizationManager"
 
 async function generatePrompt(
 	context: vscode.ExtensionContext,
@@ -42,7 +43,8 @@ async function generatePrompt(
 	experiments?: Record<string, boolean>,
 	enableMcpServerCreation?: boolean,
 	language?: string,
-	rooIgnoreInstructions?: string,
+	kodelyIgnoreInstructions?: string,
+	optimizationLevel?: CostOptimizationLevel,
 ): Promise<string> {
 	if (!context) {
 		throw new Error("Extension context is required for generating system prompt")
@@ -91,9 +93,52 @@ ${getSystemInfoSection(cwd, mode, customModeConfigs)}
 
 ${getObjectiveSection()}
 
-${await addCustomInstructions(promptComponent?.customInstructions || modeConfig.customInstructions || "", globalCustomInstructions || "", cwd, mode, { language: language ?? formatLanguage(vscode.env.language), rooIgnoreInstructions })}`
+${await addCustomInstructions(promptComponent?.customInstructions || modeConfig.customInstructions || "", globalCustomInstructions || "", cwd, mode, { language: language ?? formatLanguage(vscode.env.language), rooIgnoreInstructions: kodelyIgnoreInstructions })}
+
+${optimizationLevel ? getCostOptimizationInstructions(optimizationLevel) : ""}`
 
 	return basePrompt
+}
+
+function getCostOptimizationInstructions(optimizationLevel: CostOptimizationLevel): string {
+	switch (optimizationLevel) {
+		case CostOptimizationLevel.HIGH:
+			return `# Cost Optimization Instructions
+
+You are operating in COST-FOCUSED mode. This means you should prioritize minimizing token usage over most other considerations, however the code still must be functional as instructed. Follow these guidelines:
+
+1. Be extremely concise in your responses
+2. Minimize the amount of code you generate
+3. Focus on providing the most essential information only
+4. Use local context retrieval when possible instead of requesting full files
+5. Break complex tasks into smaller, more manageable chunks
+6. Avoid unnecessary explanations unless specifically requested
+7. Prioritize efficiency over verbosity in all interactions`
+		case CostOptimizationLevel.BALANCED:
+			return `# Cost Optimization Instructions
+
+You are operating in BALANCED mode. This means you should maintain a balance between cost efficiency and quality. Follow these guidelines:
+
+1. Be reasonably concise in your responses
+2. Generate code that is complete but not overly verbose
+3. Provide explanations when they add significant value
+4. Use context efficiently but don't sacrifice understanding
+5. Break down complex tasks when appropriate
+6. Focus on delivering the right balance of quality and efficiency`
+		case CostOptimizationLevel.LOW:
+			return `# Cost Optimization Instructions
+
+You are operating in QUALITY-FOCUSED mode. This means you should prioritize thoroughness and quality over token efficiency. Follow these guidelines:
+
+1. Provide comprehensive and detailed responses
+2. Generate complete, well-documented code
+3. Include thorough explanations and context
+4. Use as much context as needed to fully understand the problem
+5. Focus on delivering the highest quality solution
+6. Don't sacrifice quality or completeness for token efficiency`
+		default:
+			return ""
+	}
 }
 
 export const SYSTEM_PROMPT = async (
@@ -111,7 +156,8 @@ export const SYSTEM_PROMPT = async (
 	experiments?: Record<string, boolean>,
 	enableMcpServerCreation?: boolean,
 	language?: string,
-	rooIgnoreInstructions?: string,
+	kodelyIgnoreInstructions?: string,
+	optimizationLevel?: CostOptimizationLevel,
 ): Promise<string> => {
 	if (!context) {
 		throw new Error("Extension context is required for generating system prompt")
@@ -141,7 +187,7 @@ export const SYSTEM_PROMPT = async (
 			globalCustomInstructions || "",
 			cwd,
 			mode,
-			{ language: language ?? formatLanguage(vscode.env.language), rooIgnoreInstructions },
+			{ language: language ?? formatLanguage(vscode.env.language), rooIgnoreInstructions: kodelyIgnoreInstructions },
 		)
 		// For file-based prompts, don't include the tool sections
 		return `${roleDefinition}
@@ -169,6 +215,7 @@ ${customInstructions}`
 		experiments,
 		enableMcpServerCreation,
 		language,
-		rooIgnoreInstructions,
+		kodelyIgnoreInstructions,
+		optimizationLevel,
 	)
 }

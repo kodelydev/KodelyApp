@@ -6,6 +6,7 @@ import { ClineSayTool } from "../../shared/ExtensionMessage"
 import { formatResponse } from "../prompts/responses"
 import { t } from "../../i18n"
 import { ToolUse, AskApproval, HandleError, PushToolResult, RemoveClosingTag } from "../../shared/tools"
+import { CodeCompressor } from "../cost-optimization/CodeCompressor"
 import { RecordSource } from "../context-tracking/FileContextTrackerTypes"
 import { isPathOutsideWorkspace } from "../../utils/pathUtils"
 import { getReadablePath } from "../../utils/path"
@@ -49,7 +50,13 @@ export async function readFileTool(
 				return
 			}
 
-			const { maxReadFileLine = 500 } = (await cline.providerRef.deref()?.getState()) ?? {}
+			const provider = cline.providerRef.deref()
+			const { maxReadFileLine = 500 } = (await provider?.getState()) ?? {}
+
+			// Get cost optimization settings
+			const costOptimizationManager = provider?.costOptimizationManager
+			const optimizationSettings = costOptimizationManager?.getSettings()
+			const shouldCompressCode = optimizationSettings?.compressCodeInContext ?? false
 			const isFullRead = maxReadFileLine === -1
 
 			// Check if we're doing a line range read
@@ -95,11 +102,11 @@ export async function readFileTool(
 				endLine -= 1
 			}
 
-			const accessAllowed = cline.rooIgnoreController?.validateAccess(relPath)
+			const accessAllowed = cline.kodelyIgnoreController?.validateAccess(relPath)
 
 			if (!accessAllowed) {
-				await cline.say("rooignore_error", relPath)
-				const errorMsg = formatResponse.rooIgnoreError(relPath)
+				await cline.say("kodelyignore_error", relPath)
+				const errorMsg = formatResponse.kodelyIgnoreError(relPath)
 				pushToolResult(`<file><path>${relPath}</path><error>${errorMsg}</error></file>`)
 				return
 			}
@@ -164,7 +171,7 @@ export async function readFileTool(
 
 				const res = await Promise.all([
 					maxReadFileLine > 0 ? readLines(absolutePath, maxReadFileLine - 1, 0) : "",
-					parseSourceCodeDefinitionsForFile(absolutePath, cline.rooIgnoreController),
+					parseSourceCodeDefinitionsForFile(absolutePath, cline.kodelyIgnoreController),
 				])
 
 				content = res[0].length > 0 ? addLineNumbers(res[0]) : ""
@@ -232,6 +239,25 @@ export async function readFileTool(
 			// Track file read operation
 			if (relPath) {
 				await cline.getFileContextTracker().trackFileContext(relPath, "read_tool" as RecordSource)
+			}
+
+			// Apply code compression if enabled
+			if (shouldCompressCode && content && !isBinary) {
+				// Get file extension to determine language
+				const fileExt = path.extname(relPath).toLowerCase().substring(1)
+
+				// Compress the code
+				const compressedContent = CodeCompressor.compress(content, fileExt)
+
+				// Update content tag with compressed content
+				if (contentTag.includes('<content')) {
+					// Extract the attributes from the content tag
+					const contentTagStart = contentTag.substring(0, contentTag.indexOf('>'))
+					contentTag = `${contentTagStart}\n${compressedContent}</content>\n`
+
+					// Add notice about compression
+					xmlInfo += `<notice>Content has been compressed to reduce token usage</notice>\n`
+				}
 			}
 
 			// Format the result into the required XML structure

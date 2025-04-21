@@ -3,11 +3,13 @@ import { HTMLAttributes } from "react"
 import { cn } from "@/lib/utils"
 
 type SectionHeaderProps = HTMLAttributes<HTMLDivElement> & {
-	children: React.ReactNode
+	children?: React.ReactNode
 	description?: string
+	icon?: React.ReactNode
+	title?: string
 }
 
-export const SectionHeader = ({ description, children, className, ...props }: SectionHeaderProps) => {
+export const SectionHeader = ({ description, children, icon, title, className, ...props }: SectionHeaderProps) => {
 	return (
 		<div
 			className={cn(
@@ -15,7 +17,7 @@ export const SectionHeader = ({ description, children, className, ...props }: Se
 				className,
 			)}
 			{...props}>
-			<h4 className="m-0">{children}</h4>
+			<h4 className="m-0 flex items-center">{icon && <span className="mr-2 inline-flex items-center">{icon}</span>}{title || children}</h4>
 			{description && <p className="text-vscode-descriptionForeground text-sm mt-2 mb-0">{description}</p>}
 		</div>
 	)

@@ -139,6 +139,11 @@ export type ExtensionState = Pick<
 	| "browserToolEnabled"
 	| "browserViewportSize"
 	| "screenshotQuality"
+	| "optimizationLevel"
+	| "maxContextWindowUsage"
+	| "useLocalRag"
+	| "maxOutputTokens"
+	| "compressCodeInContext"
 	| "remoteBrowserEnabled"
 	| "remoteBrowserHost"
 	// | "enableCheckpoints" // Optional in GlobalSettings, required here.
@@ -148,7 +153,7 @@ export type ExtensionState = Pick<
 	| "soundVolume"
 	// | "maxOpenTabsContext" // Optional in GlobalSettings, required here.
 	// | "maxWorkspaceFiles" // Optional in GlobalSettings, required here.
-	// | "showRooIgnoredFiles" // Optional in GlobalSettings, required here.
+	// | "showKodelyIgnoredFiles" // Optional in GlobalSettings, required here.
 	// | "maxReadFileLine" // Optional in GlobalSettings, required here.
 	| "terminalOutputLineLimit"
 	| "terminalShellIntegrationTimeout"
@@ -187,7 +192,7 @@ export type ExtensionState = Pick<
 	enableCheckpoints: boolean
 	maxOpenTabsContext: number // Maximum number of VSCode open tabs to include in context (0-500)
 	maxWorkspaceFiles: number // Maximum number of files to include in current working directory details (0-500)
-	showRooIgnoredFiles: boolean // Whether to show .rooignore'd files in listings
+	showKodelyIgnoredFiles: boolean // Whether to show .kodelyignore'd files in listings
 	maxReadFileLine: number // Maximum number of lines to read from a file before truncating
 
 	experiments: Record<ExperimentId, boolean> // Map of experiment IDs to their enabled state

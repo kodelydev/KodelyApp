@@ -1,10 +1,23 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import { ApiHandler } from "../../api"
+import { CostOptimizationLevel } from "../cost-optimization/CostOptimizationManager"
 
 /**
  * Default percentage of the context window to use as a buffer when deciding when to truncate
+ * This is adjusted based on the optimization level
  */
-export const TOKEN_BUFFER_PERCENTAGE = 0.1
+export function getTokenBufferPercentage(optimizationLevel?: CostOptimizationLevel): number {
+	switch (optimizationLevel) {
+		case CostOptimizationLevel.LOW:
+			return 0.25; // More aggressive truncation to save tokens
+		case CostOptimizationLevel.BALANCED:
+			return 0.15; // Moderate truncation
+		case CostOptimizationLevel.HIGH:
+			return 0.05; // Minimal truncation to preserve context
+		default:
+			return 0.1; // Default value
+	}
+}
 
 /**
  * Counts tokens for user content using the provider's token counting implementation.
@@ -62,6 +75,7 @@ type TruncateOptions = {
 	contextWindow: number
 	maxTokens?: number | null
 	apiHandler: ApiHandler
+	optimizationLevel?: CostOptimizationLevel
 }
 
 /**
@@ -77,6 +91,7 @@ export async function truncateConversationIfNeeded({
 	contextWindow,
 	maxTokens,
 	apiHandler,
+	optimizationLevel,
 }: TruncateOptions): Promise<Anthropic.Messages.MessageParam[]> {
 	// Calculate the maximum tokens reserved for response
 	const reservedTokens = maxTokens || contextWindow * 0.2
@@ -92,8 +107,9 @@ export async function truncateConversationIfNeeded({
 	const effectiveTokens = totalTokens + lastMessageTokens
 
 	// Calculate available tokens for conversation history
-	// Truncate if we're within TOKEN_BUFFER_PERCENTAGE of the context window
-	const allowedTokens = contextWindow * (1 - TOKEN_BUFFER_PERCENTAGE) - reservedTokens
+	// Truncate if we're within buffer percentage of the context window
+	const bufferPercentage = getTokenBufferPercentage(optimizationLevel)
+	const allowedTokens = contextWindow * (1 - bufferPercentage) - reservedTokens
 
 	// Determine if truncation is needed and apply if necessary
 	return effectiveTokens > allowedTokens ? truncateConversation(messages, 0.5) : messages

@@ -1,7 +1,13 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import * as path from "path"
 import * as diff from "diff"
-import { RooIgnoreController, LOCK_TEXT_SYMBOL } from "../ignore/RooIgnoreController"
+import { KodelyIgnoreController, LOCK_TEXT_SYMBOL } from "../ignore/KodelyIgnoreController"
+
+type FileInfo = {
+	name: string
+	type: string
+	path: string
+}
 
 export const formatResponse = {
 	toolDenied: () => `The user denied this operation.`,
@@ -17,6 +23,9 @@ export const formatResponse = {
 	rooIgnoreError: (path: string) =>
 		`Access to ${path} is blocked by the .rooignore file settings. You must try to continue in the task without using this file, or ask the user to update the .rooignore file.`,
 
+	kodelyIgnoreError: (path: string) =>
+		`Access to ${path} is blocked by the .kodelyignore file settings. You must try to continue in the task without using this file, or ask the user to update the .kodelyignore file.`,
+
 	noToolsUsed: () =>
 		`[ERROR] You did not use a tool in your previous response! Please retry with a tool use.
 
@@ -24,9 +33,9 @@ ${toolUseInstructionsReminder}
 
 # Next Steps
 
-If you have completed the user's task, use the attempt_completion tool. 
-If you require additional information from the user, use the ask_followup_question tool. 
-Otherwise, if you have not completed the task and do not need additional information, then proceed with the next step of the task. 
+If you have completed the user's task, use the attempt_completion tool.
+If you require additional information from the user, use the ask_followup_question tool.
+Otherwise, if you have not completed the task and do not need additional information, then proceed with the next step of the task.
 (This is an automated message, so do not respond to it conversationally.)`,
 
 	tooManyMistakes: (feedback?: string) =>
@@ -60,7 +69,7 @@ Otherwise, if you have not completed the task and do not need additional informa
 		absolutePath: string,
 		files: string[],
 		didHitLimit: boolean,
-		rooIgnoreController: RooIgnoreController | undefined,
+		kodelyIgnoreController: KodelyIgnoreController | undefined,
 		showRooIgnoredFiles: boolean,
 	): string => {
 		const sorted = files
@@ -93,14 +102,14 @@ Otherwise, if you have not completed the task and do not need additional informa
 
 		let rooIgnoreParsed: string[] = sorted
 
-		if (rooIgnoreController) {
+		if (kodelyIgnoreController) {
 			rooIgnoreParsed = []
 			for (const filePath of sorted) {
 				// path is relative to absolute path, not cwd
 				// validateAccess expects either path relative to cwd or absolute path
 				// otherwise, for validating against ignore patterns like "assets/icons", we would end up with just "icons", which would result in the path not being ignored.
 				const absoluteFilePath = path.resolve(absolutePath, filePath)
-				const isIgnored = !rooIgnoreController.validateAccess(absoluteFilePath)
+				const isIgnored = !kodelyIgnoreController.validateAccess(absoluteFilePath)
 
 				if (isIgnored) {
 					// If file is ignored and we're not showing ignored files, skip it
@@ -147,6 +156,31 @@ const formatImagesIntoBlocks = (images?: string[]): Anthropic.ImageBlockParam[] 
 				} as Anthropic.ImageBlockParam
 			})
 		: []
+}
+
+/**
+ * Format a list of files for display, marking ignored files with a lock symbol
+ * @param files - Array of file info objects
+ * @param kodelyIgnoreController - Optional controller to check if files are ignored
+ * @returns Formatted string with file list
+ */
+export function formatListFilesResponse(files: FileInfo[], kodelyIgnoreController?: KodelyIgnoreController): string {
+	if (files.length === 0) {
+		return "No files found."
+	}
+
+	const formattedFiles = files.map((file) => {
+		const isDirectory = file.type === "directory"
+		const displayPath = isDirectory ? `${file.path}/` : file.path
+
+		if (kodelyIgnoreController && !kodelyIgnoreController.validateAccess(file.path)) {
+			return `${displayPath} ${LOCK_TEXT_SYMBOL}`
+		}
+
+		return displayPath
+	})
+
+	return formattedFiles.join("\n")
 }
 
 const toolUseInstructionsReminder = `# Reminder: Instructions for Tool Use

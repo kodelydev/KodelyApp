@@ -6,13 +6,13 @@ import "@testing-library/jest-dom"
 
 import AppWithProviders from "../App"
 
-jest.mock("@src/utils/vscode", () => ({
+jest.mock("../utils/vscode", () => ({
 	vscode: {
 		postMessage: jest.fn(),
 	},
 }))
 
-jest.mock("@src/components/chat/ChatView", () => ({
+jest.mock("../components/chat/ChatView", () => ({
 	__esModule: true,
 	default: function ChatView({ isHidden }: { isHidden: boolean }) {
 		return (
@@ -23,7 +23,7 @@ jest.mock("@src/components/chat/ChatView", () => ({
 	},
 }))
 
-jest.mock("@src/components/settings/SettingsView", () => ({
+jest.mock("../components/settings/SettingsView", () => ({
 	__esModule: true,
 	default: function SettingsView({ onDone }: { onDone: () => void }) {
 		return (
@@ -34,7 +34,7 @@ jest.mock("@src/components/settings/SettingsView", () => ({
 	},
 }))
 
-jest.mock("@src/components/history/HistoryView", () => ({
+jest.mock("../components/history/HistoryView", () => ({
 	__esModule: true,
 	default: function HistoryView({ onDone }: { onDone: () => void }) {
 		return (
@@ -45,7 +45,7 @@ jest.mock("@src/components/history/HistoryView", () => ({
 	},
 }))
 
-jest.mock("@src/components/mcp/McpView", () => ({
+jest.mock("../components/mcp/McpView", () => ({
 	__esModule: true,
 	default: function McpView({ onDone }: { onDone: () => void }) {
 		return (
@@ -56,7 +56,7 @@ jest.mock("@src/components/mcp/McpView", () => ({
 	},
 }))
 
-jest.mock("@src/components/prompts/PromptsView", () => ({
+jest.mock("../components/prompts/PromptsView", () => ({
 	__esModule: true,
 	default: function PromptsView({ onDone }: { onDone: () => void }) {
 		return (
@@ -67,7 +67,7 @@ jest.mock("@src/components/prompts/PromptsView", () => ({
 	},
 }))
 
-jest.mock("@src/context/ExtensionStateContext", () => ({
+jest.mock("../context/ExtensionStateContext", () => ({
 	useExtensionState: () => ({
 		didHydrateState: true,
 		showWelcome: false,

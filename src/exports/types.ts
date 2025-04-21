@@ -276,7 +276,7 @@ type GlobalSettings = {
 	soundVolume?: number | undefined
 	maxOpenTabsContext?: number | undefined
 	maxWorkspaceFiles?: number | undefined
-	showRooIgnoredFiles?: boolean | undefined
+	showKodelyIgnoredFiles?: boolean | undefined
 	maxReadFileLine?: number | undefined
 	terminalOutputLineLimit?: number | undefined
 	terminalShellIntegrationTimeout?: number | undefined
@@ -408,7 +408,7 @@ type ClineMessage = {
 				| "new_task"
 				| "subtask_result"
 				| "checkpoint_saved"
-				| "rooignore_error"
+				| "kodelyignore_error"
 				| "diff_error"
 		  )
 		| undefined
@@ -493,7 +493,7 @@ type RooCodeEvents = {
 							| "new_task"
 							| "subtask_result"
 							| "checkpoint_saved"
-							| "rooignore_error"
+							| "kodelyignore_error"
 							| "diff_error"
 					  )
 					| undefined

@@ -1,9 +1,9 @@
 import React from "react"
 import { render, screen } from "@testing-library/react"
-import CommandOutputViewer from "@src/components/common/CommandOutputViewer"
+import CommandOutputViewer from "../../../components/common/CommandOutputViewer"
 
 // Mock the cn utility function
-jest.mock("@src/lib/utils", () => ({
+jest.mock("../../../lib/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 }))
 

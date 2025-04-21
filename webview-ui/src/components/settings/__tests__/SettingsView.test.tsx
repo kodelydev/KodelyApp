@@ -9,7 +9,7 @@ import { ExtensionStateContextProvider } from "@/context/ExtensionStateContext"
 import SettingsView from "../SettingsView"
 
 // Mock vscode API
-jest.mock("@src/utils/vscode", () => ({
+jest.mock("../../../utils/vscode", () => ({
 	vscode: {
 		postMessage: jest.fn(),
 	},

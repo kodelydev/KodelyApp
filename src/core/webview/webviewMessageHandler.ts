@@ -14,6 +14,7 @@ import { checkoutDiffPayloadSchema, checkoutRestorePayloadSchema, WebviewMessage
 import { checkExistKey } from "../../shared/checkExistApiConfig"
 import { EXPERIMENT_IDS, experimentDefault, ExperimentId } from "../../shared/experiments"
 import { Terminal } from "../../integrations/terminal/Terminal"
+import { CostOptimizationLevel } from "../cost-optimization/CostOptimizationManager"
 import { openFile, openImage } from "../../integrations/misc/open-file"
 import { selectImages } from "../../integrations/misc/process-images"
 import { getTheme } from "../../integrations/theme/getTheme"
@@ -492,7 +493,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			await provider.context.globalState.update("allowedCommands", message.commands)
 			// Also update workspace settings
 			await vscode.workspace
-				.getConfiguration("roo-cline")
+				.getConfiguration("kodely")
 				.update("allowedCommands", message.commands, vscode.ConfigurationTarget.Global)
 			break
 		case "openMcpSettings": {
@@ -949,7 +950,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			await updateGlobalState("language", message.text as Language)
 			await provider.postStateToWebview()
 			break
-		case "showRooIgnoredFiles":
+		case "showKodelyIgnoredFiles":
 			await updateGlobalState("showRooIgnoredFiles", message.bool ?? true)
 			await provider.postStateToWebview()
 			break
@@ -1354,6 +1355,31 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			await provider.postStateToWebview()
 			break
 		}
+		case "optimizationLevel": {
+			await updateGlobalState("optimizationLevel", message.text as unknown as CostOptimizationLevel)
+			await provider.postStateToWebview()
+			break
+		}
+		case "maxContextWindowUsage": {
+			await updateGlobalState("maxContextWindowUsage", message.value as number)
+			await provider.postStateToWebview()
+			break
+		}
+		case "useLocalRag": {
+			await updateGlobalState("useLocalRag", message.bool)
+			await provider.postStateToWebview()
+			break
+		}
+		case "maxOutputTokens": {
+			await updateGlobalState("maxOutputTokens", message.value as number)
+			await provider.postStateToWebview()
+			break
+		}
+		case "compressCodeInContext": {
+			await updateGlobalState("compressCodeInContext", message.bool)
+			await provider.postStateToWebview()
+			break
+		}
 	}
 }
 
@@ -1370,6 +1396,7 @@ const generateSystemPrompt = async (provider: ClineProvider, message: WebviewMes
 		enableMcpServerCreation,
 		browserToolEnabled,
 		language,
+		optimizationLevel,
 	} = await provider.getState()
 
 	const diffStrategy = new MultiSearchReplaceDiffStrategy(fuzzyMatchThreshold)
@@ -1379,7 +1406,7 @@ const generateSystemPrompt = async (provider: ClineProvider, message: WebviewMes
 	const mode = message.mode ?? defaultModeSlug
 	const customModes = await provider.customModesManager.getCustomModes()
 
-	const rooIgnoreInstructions = provider.getCurrentCline()?.rooIgnoreController?.getInstructions()
+	const kodelyIgnoreInstructions = provider.getCurrentCline()?.kodelyIgnoreController?.getInstructions()
 
 	// Determine if browser tools can be used based on model support, mode, and user settings
 	let modelSupportsComputerUse = false
@@ -1416,7 +1443,8 @@ const generateSystemPrompt = async (provider: ClineProvider, message: WebviewMes
 		experiments,
 		enableMcpServerCreation,
 		language,
-		rooIgnoreInstructions,
+		kodelyIgnoreInstructions,
+		optimizationLevel as unknown as CostOptimizationLevel,
 	)
 	return systemPrompt
 }

@@ -2,7 +2,7 @@
 
 import { render, screen, fireEvent } from "@testing-library/react"
 
-import { ContextManagementSettings } from "@src/components/settings/ContextManagementSettings"
+import { ContextManagementSettings } from "../ContextManagementSettings"
 
 class MockResizeObserver {
 	observe() {}
@@ -28,7 +28,7 @@ describe("ContextManagementSettings", () => {
 	const defaultProps = {
 		maxOpenTabsContext: 20,
 		maxWorkspaceFiles: 200,
-		showRooIgnoredFiles: false,
+		showKodelyIgnoredFiles: false,
 		setCachedStateField: jest.fn(),
 	}
 
@@ -47,10 +47,10 @@ describe("ContextManagementSettings", () => {
 		const workspaceFilesSlider = screen.getByTestId("workspace-files-limit-slider")
 		expect(workspaceFilesSlider).toBeInTheDocument()
 
-		// Show .rooignore'd files
-		const showRooIgnoredFilesCheckbox = screen.getByTestId("show-rooignored-files-checkbox")
-		expect(showRooIgnoredFilesCheckbox).toBeInTheDocument()
-		expect(screen.getByTestId("show-rooignored-files-checkbox")).not.toBeChecked()
+		// Show .kodelyignore'd files
+		const showKodelyIgnoredFilesCheckbox = screen.getByTestId("show-kodelyignored-files-checkbox")
+		expect(showKodelyIgnoredFilesCheckbox).toBeInTheDocument()
+		expect(screen.getByTestId("show-kodelyignored-files-checkbox")).not.toBeChecked()
 	})
 
 	it("updates open tabs context limit", () => {
@@ -71,12 +71,12 @@ describe("ContextManagementSettings", () => {
 		expect(defaultProps.setCachedStateField).toHaveBeenCalledWith("maxWorkspaceFiles", 50)
 	})
 
-	it("updates show rooignored files setting", () => {
+	it("updates show kodelyignored files setting", () => {
 		render(<ContextManagementSettings {...defaultProps} />)
 
-		const checkbox = screen.getByTestId("show-rooignored-files-checkbox")
+		const checkbox = screen.getByTestId("show-kodelyignored-files-checkbox")
 		fireEvent.click(checkbox)
 
-		expect(defaultProps.setCachedStateField).toHaveBeenCalledWith("showRooIgnoredFiles", true)
+		expect(defaultProps.setCachedStateField).toHaveBeenCalledWith("showKodelyIgnoredFiles", true)
 	})
 })

@@ -3,16 +3,16 @@ import Mocha from "mocha"
 import { glob } from "glob"
 import * as vscode from "vscode"
 
-import type { RooCodeAPI } from "../../../src/exports/roo-code"
+import type { KodelyAPI } from "../../../src/exports/kodely"
 
 import { waitFor } from "./utils"
 
 declare global {
-	var api: RooCodeAPI
+	var api: KodelyAPI
 }
 
 export async function run() {
-	const extension = vscode.extensions.getExtension<RooCodeAPI>("RooVeterinaryInc.roo-cline")
+	const extension = vscode.extensions.getExtension<KodelyAPI>("KodelyAI.kodely")
 
 	if (!extension) {
 		throw new Error("Extension not found")
@@ -35,7 +35,7 @@ export async function run() {
 		},
 	})
 
-	await vscode.commands.executeCommand("roo-cline.SidebarProvider.focus")
+	await vscode.commands.executeCommand("kodely.SidebarProvider.focus")
 	await waitFor(() => api.isReady())
 
 	// Expose the API to the tests.

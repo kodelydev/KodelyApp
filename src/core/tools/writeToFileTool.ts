@@ -32,11 +32,11 @@ export async function writeToFileTool(
 		return
 	}
 
-	const accessAllowed = cline.rooIgnoreController?.validateAccess(relPath)
+	const accessAllowed = cline.kodelyIgnoreController?.validateAccess(relPath)
 
 	if (!accessAllowed) {
-		await cline.say("rooignore_error", relPath)
-		pushToolResult(formatResponse.toolError(formatResponse.rooIgnoreError(relPath)))
+		await cline.say("kodelyignore_error", relPath)
+		pushToolResult(formatResponse.toolError(formatResponse.kodelyIgnoreError(relPath)))
 		return
 	}
 
@@ -115,7 +115,7 @@ export async function writeToFileTool(
 				cline.consecutiveMistakeCount++
 				cline.recordToolError("write_to_file")
 				pushToolResult(await cline.sayAndCreateMissingParamError("write_to_file", "line_count"))
-				await cline.diffViewProvider.revertChanges()
+				await cline.diffViewProvider.reset()
 				return
 			}
 

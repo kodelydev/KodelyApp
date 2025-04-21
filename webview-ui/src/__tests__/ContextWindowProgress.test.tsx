@@ -2,7 +2,7 @@
 
 import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
-import TaskHeader from "@src/components/chat/TaskHeader"
+import TaskHeader from "../components/chat/TaskHeader"
 
 // Mock formatLargeNumber function
 jest.mock("@/utils/format", () => ({
@@ -15,7 +15,7 @@ jest.mock("@vscode/webview-ui-toolkit/react", () => ({
 }))
 
 // Mock ExtensionStateContext since we use useExtensionState
-jest.mock("@src/context/ExtensionStateContext", () => ({
+jest.mock("../context/ExtensionStateContext", () => ({
 	useExtensionState: jest.fn(() => ({
 		apiConfiguration: {
 			apiProvider: "openai",
@@ -30,8 +30,8 @@ jest.mock("@src/context/ExtensionStateContext", () => ({
 }))
 
 // Mock highlighting function to avoid JSX parsing issues in tests
-jest.mock("@src/components/chat/TaskHeader", () => {
-	const originalModule = jest.requireActual("@src/components/chat/TaskHeader")
+jest.mock("../components/chat/TaskHeader", () => {
+	const originalModule = jest.requireActual("../components/chat/TaskHeader")
 	return {
 		__esModule: true,
 		...originalModule,

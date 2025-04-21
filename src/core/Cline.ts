@@ -87,12 +87,13 @@ import { SYSTEM_PROMPT } from "./prompts/system"
 // ... everything else
 import { parseMentions } from "./mentions"
 import { FileContextTracker } from "./context-tracking/FileContextTracker"
-import { RooIgnoreController } from "./ignore/RooIgnoreController"
+import { KodelyIgnoreController } from "./ignore/KodelyIgnoreController"
 import { type AssistantMessageContent, parseAssistantMessage } from "./assistant-message"
 import { truncateConversationIfNeeded } from "./sliding-window"
 import { ClineProvider } from "./webview/ClineProvider"
 import { validateToolUse } from "./mode-validator"
 import { MultiSearchReplaceDiffStrategy } from "./diff/strategies/multi-search-replace"
+import { CodeCompressor } from "./cost-optimization/CodeCompressor"
 
 type UserContent = Array<Anthropic.Messages.ContentBlockParam>
 
@@ -152,7 +153,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 
 	apiConversationHistory: (Anthropic.MessageParam & { ts?: number })[] = []
 	clineMessages: ClineMessage[] = []
-	rooIgnoreController?: RooIgnoreController
+	kodelyIgnoreController?: KodelyIgnoreController
 	private askResponse?: ClineAskResponse
 	private askResponseText?: string
 	private askResponseImages?: string[]
@@ -219,10 +220,10 @@ export class Cline extends EventEmitter<ClineEvents> {
 		this.instanceId = crypto.randomUUID().slice(0, 8)
 		this.taskNumber = -1
 
-		this.rooIgnoreController = new RooIgnoreController(this.cwd)
+		this.kodelyIgnoreController = new KodelyIgnoreController(this.cwd)
 		this.fileContextTracker = new FileContextTracker(provider, this.taskId)
-		this.rooIgnoreController.initialize().catch((error) => {
-			console.error("Failed to initialize RooIgnoreController:", error)
+		this.kodelyIgnoreController.initialize().catch((error) => {
+			console.error("Failed to initialize KodelyIgnoreController:", error)
 		})
 		this.apiConfiguration = apiConfiguration
 		this.api = buildApiHandler(apiConfiguration)
@@ -926,7 +927,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 
 		this.urlContentFetcher.closeBrowser()
 		this.browserSession.closeBrowser()
-		this.rooIgnoreController?.dispose()
+		this.kodelyIgnoreController?.dispose()
 		this.fileContextTracker.dispose()
 
 		// If we're not streaming then `abortStream` (which reverts the diff
@@ -978,7 +979,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 			})
 		}
 
-		const rooIgnoreInstructions = this.rooIgnoreController?.getInstructions()
+		const rooIgnoreInstructions = this.kodelyIgnoreController?.getInstructions()
 
 		const {
 			browserViewportSize,
@@ -1032,16 +1033,26 @@ export class Cline extends EventEmitter<ClineEvents> {
 			const DEFAULT_THINKING_MODEL_MAX_TOKENS = 16_384
 
 			const modelInfo = this.api.getModel().info
-			const maxTokens = modelInfo.thinking
-				? this.apiConfiguration.modelMaxTokens || DEFAULT_THINKING_MODEL_MAX_TOKENS
-				: modelInfo.maxTokens
+
+			// Get cost optimization settings
+			const costOptimizationManager = this.providerRef.deref()?.costOptimizationManager
+			const optimizationSettings = costOptimizationManager?.getSettings()
+
+			// Use cost optimization settings if available, otherwise use defaults
+			const maxTokens = optimizationSettings?.maxOutputTokens || (
+				modelInfo.thinking
+					? this.apiConfiguration.modelMaxTokens || DEFAULT_THINKING_MODEL_MAX_TOKENS
+					: modelInfo.maxTokens
+			)
 			const contextWindow = modelInfo.contextWindow
+
 			const trimmedMessages = await truncateConversationIfNeeded({
 				messages: this.apiConversationHistory,
 				totalTokens,
 				maxTokens,
 				contextWindow,
 				apiHandler: this.api,
+				optimizationLevel: optimizationSettings?.optimizationLevel,
 			})
 
 			if (trimmedMessages !== this.apiConversationHistory) {
@@ -1595,7 +1606,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 				"mistake_limit_reached",
 				this.api.getModel().id.includes("claude")
 					? `This may indicate a failure in his thought process or inability to use a tool properly, which can be mitigated with some user guidance (e.g. "Try breaking down the task into smaller steps").`
-					: "Roo Code uses complex prompts and iterative task execution that may be challenging for less capable models. For best results, it's recommended to use Claude 3.7 Sonnet for its advanced agentic coding capabilities.",
+					: "Kodely uses complex prompts and iterative task execution that may be challenging for less capable models. For best results, it's recommended to use Claude 3.7 Sonnet for its advanced agentic coding capabilities.",
 			)
 
 			if (response === "messageResponse") {
@@ -1642,7 +1653,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 			}
 		}
 
-		// Getting verbose details is an expensive operation, it uses ripgrep to
+		// Getting verbose details is an expensive operation, it uses globby to
 		// top-down build file structure of project which for large projects can
 		// take a few seconds. For the best UX we show a placeholder api_req_started
 		// message with a loading spinner as this happens.
@@ -1999,9 +2010,9 @@ export class Cline extends EventEmitter<ClineEvents> {
 			.map((absolutePath) => path.relative(this.cwd, absolutePath))
 			.slice(0, maxWorkspaceFiles)
 
-		// Filter paths through rooIgnoreController
-		const allowedVisibleFiles = this.rooIgnoreController
-			? this.rooIgnoreController.filterPaths(visibleFilePaths)
+		// Filter paths through kodelyIgnoreController
+		const allowedVisibleFiles = this.kodelyIgnoreController
+			? this.kodelyIgnoreController.filterPaths(visibleFilePaths)
 			: visibleFilePaths.map((p) => p.toPosix()).join("\n")
 
 		if (allowedVisibleFiles) {
@@ -2020,9 +2031,9 @@ export class Cline extends EventEmitter<ClineEvents> {
 			.map((absolutePath) => path.relative(this.cwd, absolutePath).toPosix())
 			.slice(0, maxTabs)
 
-		// Filter paths through rooIgnoreController
-		const allowedOpenTabs = this.rooIgnoreController
-			? this.rooIgnoreController.filterPaths(openTabPaths)
+		// Filter paths through kodelyIgnoreController
+		const allowedOpenTabs = this.kodelyIgnoreController
+			? this.kodelyIgnoreController.filterPaths(openTabPaths)
 			: openTabPaths.map((p) => p.toPosix()).join("\n")
 
 		if (allowedOpenTabs) {
@@ -2221,13 +2232,13 @@ export class Cline extends EventEmitter<ClineEvents> {
 			} else {
 				const maxFiles = maxWorkspaceFiles ?? 200
 				const [files, didHitLimit] = await listFiles(this.cwd, true, maxFiles)
-				const { showRooIgnoredFiles = true } = (await this.providerRef.deref()?.getState()) ?? {}
+				const { showKodelyIgnoredFiles = true } = (await this.providerRef.deref()?.getState()) ?? {}
 				const result = formatResponse.formatFilesList(
 					this.cwd,
 					files,
 					didHitLimit,
-					this.rooIgnoreController,
-					showRooIgnoredFiles,
+					this.kodelyIgnoreController,
+					showKodelyIgnoredFiles,
 				)
 				details += result
 			}

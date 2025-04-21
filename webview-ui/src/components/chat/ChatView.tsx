@@ -10,16 +10,16 @@ import {
 	ClineSayBrowserAction,
 	ClineSayTool,
 	ExtensionMessage,
-} from "@roo/shared/ExtensionMessage"
-import { McpServer, McpTool } from "@roo/shared/mcp"
-import { findLast } from "@roo/shared/array"
-import { combineApiRequests } from "@roo/shared/combineApiRequests"
-import { combineCommandSequences } from "@roo/shared/combineCommandSequences"
-import { getApiMetrics } from "@roo/shared/getApiMetrics"
-import { useExtensionState } from "@src/context/ExtensionStateContext"
-import { vscode } from "@src/utils/vscode"
+} from "../../../../src/shared/ExtensionMessage"
+import { McpServer, McpTool } from "../../../../src/shared/mcp"
+import { findLast } from "../../../../src/shared/array"
+import { combineApiRequests } from "../../../../src/shared/combineApiRequests"
+import { combineCommandSequences } from "../../../../src/shared/combineCommandSequences"
+import { getApiMetrics } from "../../../../src/shared/getApiMetrics"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { vscode } from "../../utils/vscode"
 import HistoryPreview from "../history/HistoryPreview"
-import RooHero from "../welcome/RooHero"
+import KodelyHero from "../welcome/KodelyHero"
 import { normalizeApiConfiguration } from "../settings/ApiOptions"
 import Announcement from "./Announcement"
 import BrowserSessionRow from "./BrowserSessionRow"
@@ -27,10 +27,9 @@ import ChatRow from "./ChatRow"
 import ChatTextArea from "./ChatTextArea"
 import TaskHeader from "./TaskHeader"
 import AutoApproveMenu from "./AutoApproveMenu"
-import SystemPromptWarning from "./SystemPromptWarning"
-import { AudioType } from "@roo/shared/WebviewMessage"
-import { validateCommand } from "@src/utils/command-validation"
-import { getAllModes } from "@roo/shared/modes"
+import { AudioType } from "../../../../src/shared/WebviewMessage"
+import { validateCommand } from "../../utils/command-validation"
+import { getAllModes } from "../../../../src/shared/modes"
 import TelemetryBanner from "../common/TelemetryBanner"
 import { useAppTranslation } from "@/i18n/TranslationContext"
 import removeMd from "remove-markdown"
@@ -78,7 +77,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		alwaysAllowSubtasks,
 		customModes,
 		telemetrySetting,
-		hasSystemPromptOverride,
 	} = useExtensionState()
 
 	//const task = messages.length > 0 ? (messages[0].say === "task" ? messages[0] : undefined) : undefined) : undefined
@@ -1207,13 +1205,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						onClose={handleTaskCloseButtonClick}
 					/>
 
-					{/* System prompt override warning */}
-					{hasSystemPromptOverride && (
-						<div className="px-3">
-							<SystemPromptWarning />
-						</div>
-					)}
-
 					{/* Checkpoint warning message */}
 					{showCheckpointWarning && (
 						<div className="px-3">
@@ -1234,22 +1225,22 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 					{telemetrySetting === "unset" && <TelemetryBanner />}
 					{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
 
-					<RooHero />
+					<KodelyHero />
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>
 			)}
 
-			{/* 
+			{/*
 			// Flex layout explanation:
 			// 1. Content div above uses flex: "1 1 0" to:
-			//    - Grow to fill available space (flex-grow: 1) 
+			//    - Grow to fill available space (flex-grow: 1)
 			//    - Shrink when AutoApproveMenu needs space (flex-shrink: 1)
 			//    - Start from zero size (flex-basis: 0) to ensure proper distribution
 			//    minHeight: 0 allows it to shrink below its content height
 			//
 			// 2. AutoApproveMenu uses flex: "0 1 auto" to:
 			//    - Not grow beyond its content (flex-grow: 0)
-			//    - Shrink when viewport is small (flex-shrink: 1) 
+			//    - Shrink when viewport is small (flex-shrink: 1)
 			//    - Use its content size as basis (flex-basis: auto)
 			//    This ensures it takes its natural height when there's space
 			//    but becomes scrollable when the viewport is too small
@@ -1403,7 +1394,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 				modeShortcutText={modeShortcutText}
 			/>
 
-			<div id="roo-portal" />
+			<div id="kodely-portal" />
 		</div>
 	)
 }

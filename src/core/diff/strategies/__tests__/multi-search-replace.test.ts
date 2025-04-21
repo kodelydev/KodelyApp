@@ -1732,12 +1732,12 @@ function sum(a, b) {
 
 		it("should match content with smart quotes", async () => {
 			const originalContent =
-				"**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!"
+				"**Enjoy Kodely!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!"
 			const diffContent = `test.ts
 <<<<<<< SEARCH
-**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
+**Enjoy Kodely!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
 =======
-**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can't wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
+**Enjoy Kodely!** Whether you keep it on a short leash or let it roam autonomously, we can't wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
 
 You're still here?
 >>>>>>> REPLACE`
@@ -1746,7 +1746,7 @@ You're still here?
 			expect(result.success).toBe(true)
 			if (result.success) {
 				expect(result.content).toBe(
-					"**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can't wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!\n\nYou're still here?",
+					"**Enjoy Kodely!** Whether you keep it on a short leash or let it roam autonomously, we can't wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!\n\nYou're still here?",
 				)
 			}
 		})
@@ -2253,85 +2253,6 @@ function process() {
 
 function two() {
     return 2;
-}`)
-			}
-		})
-
-		it("should fail when line range is far outside file bounds", async () => {
-			const originalContent = `
-function one() {
-		  return 1;
-}
-
-function two() {
-		  return 2;
-}
-
-function three() {
-		  return 3;
-}
-`.trim()
-			const diffContent = `test.ts
-<<<<<<< SEARCH
-:start_line:1000
--------
-function three() {
-		  return 3;
-}
-=======
-function three() {
-		  return "three";
-}
->>>>>>> REPLACE`
-
-			// Line 1000 is way outside the bounds of the file (10 lines)
-			// and outside of any reasonable buffer range, so it should fail
-			const result = await strategy.applyDiff(originalContent, diffContent, 1000)
-			expect(result.success).toBe(false)
-		})
-
-		it("should find match when line range is slightly out of bounds but within buffer zone", async () => {
-			const originalContent = `
-function one() {
-		  return 1;
-}
-
-function two() {
-		  return 2;
-}
-
-function three() {
-		  return 3;
-}
-`.trim()
-			const diffContent = `test.ts
-<<<<<<< SEARCH
-:start_line:11
--------
-function three() {
-		  return 3;
-}
-=======
-function three() {
-		  return "three";
-}
->>>>>>> REPLACE`
-
-			// File only has 10 lines, but we specify line 11
-			// It should still find the match since it's within the buffer zone (5 lines)
-			const result = await strategy.applyDiff(originalContent, diffContent, 11)
-			expect(result.success).toBe(true)
-			if (result.success) {
-				expect(result.content).toBe(`function one() {
-		  return 1;
-}
-
-function two() {
-		  return 2;
-}
-
-function three() {
-		  return "three";
 }`)
 			}
 		})

@@ -1,4 +1,4 @@
-import { resolve } from "path"
+import path from "path"
 import fs from "fs"
 
 import { defineConfig } from "vite"
@@ -17,7 +17,7 @@ const writePortToFile = () => {
 
 				if (port) {
 					// Write to a file in the project root
-					const portFilePath = resolve(__dirname, "../.vite-port")
+					const portFilePath = path.resolve(__dirname, "../.vite-port")
 					fs.writeFileSync(portFilePath, port.toString())
 					console.log(`[Vite Plugin] Server started on port ${port}`)
 					console.log(`[Vite Plugin] Port information written to ${portFilePath}`)
@@ -34,9 +34,7 @@ export default defineConfig({
 	plugins: [react(), tailwindcss(), writePortToFile()],
 	resolve: {
 		alias: {
-			"@": resolve(__dirname, "./src"),
-			"@src": resolve(__dirname, "./src"),
-			"@roo": resolve(__dirname, "../src"),
+			"@": path.resolve(__dirname, "./src"),
 		},
 	},
 	build: {

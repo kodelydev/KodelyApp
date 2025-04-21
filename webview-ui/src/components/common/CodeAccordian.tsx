@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react"
-import { getLanguageFromPath } from "@src/utils/getLanguageFromPath"
+import { getLanguageFromPath } from "../../utils/getLanguageFromPath"
 import CodeBlock, { CODE_BLOCK_BG_COLOR } from "./CodeBlock"
-import { ToolProgressStatus } from "@roo/shared/ExtensionMessage"
+import { ToolProgressStatus } from "../../../../src/shared/ExtensionMessage"
 
 interface CodeAccordianProps {
 	code?: string

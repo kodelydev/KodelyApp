@@ -28,11 +28,11 @@ export async function appendToFileTool(
 		return
 	}
 
-	const accessAllowed = cline.rooIgnoreController?.validateAccess(relPath)
+	const accessAllowed = cline.kodelyIgnoreController?.validateAccess(relPath)
 
 	if (!accessAllowed) {
-		await cline.say("rooignore_error", relPath)
-		pushToolResult(formatResponse.toolError(formatResponse.rooIgnoreError(relPath)))
+		await cline.say("kodelyignore_error", relPath)
+		pushToolResult(formatResponse.toolError(formatResponse.kodelyIgnoreError(relPath)))
 		return
 	}
 

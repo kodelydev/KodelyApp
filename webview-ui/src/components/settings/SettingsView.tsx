@@ -13,12 +13,13 @@ import {
 	Globe,
 	Info,
 	LucideIcon,
+	DollarSign,
 } from "lucide-react"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 
-import { ExperimentId } from "@roo/shared/experiments"
-import { TelemetrySetting } from "@roo/shared/TelemetrySetting"
-import { ApiConfiguration } from "@roo/shared/api"
+import { ExperimentId } from "../../../../src/shared/experiments"
+import { TelemetrySetting } from "../../../../src/shared/TelemetrySetting"
+import { ApiConfiguration } from "../../../../src/shared/api"
 
 import { vscode } from "@/utils/vscode"
 import { ExtensionStateContextType, useExtensionState } from "@/context/ExtensionStateContext"
@@ -53,6 +54,8 @@ import { ExperimentalSettings } from "./ExperimentalSettings"
 import { LanguageSettings } from "./LanguageSettings"
 import { About } from "./About"
 import { Section } from "./Section"
+import { CostOptimizationSettings } from "./CostOptimizationSettings"
+import { CostOptimizationLevel } from "../../../../src/core/cost-optimization/CostOptimizationManager"
 
 export interface SettingsViewRef {
 	checkUnsaveChanges: (then: () => void) => void
@@ -60,6 +63,7 @@ export interface SettingsViewRef {
 
 const sectionNames = [
 	"providers",
+	"costOptimization",
 	"autoApprove",
 	"browser",
 	"checkpoints",
@@ -132,9 +136,14 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		terminalZshP10k,
 		terminalZdotdir,
 		writeDelayMs,
-		showRooIgnoredFiles,
+		showKodelyIgnoredFiles,
 		remoteBrowserEnabled,
 		maxReadFileLine,
+		optimizationLevel = CostOptimizationLevel.BALANCED,
+		maxContextWindowUsage = 85,
+		useLocalRag = true,
+		maxOutputTokens = 2000,
+		compressCodeInContext = false,
 	} = cachedState
 
 	// Make sure apiConfiguration is initialized and managed by SettingsView.
@@ -249,7 +258,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 			vscode.postMessage({ type: "requestDelaySeconds", value: requestDelaySeconds })
 			vscode.postMessage({ type: "maxOpenTabsContext", value: maxOpenTabsContext })
 			vscode.postMessage({ type: "maxWorkspaceFiles", value: maxWorkspaceFiles ?? 200 })
-			vscode.postMessage({ type: "showRooIgnoredFiles", bool: showRooIgnoredFiles })
+			vscode.postMessage({ type: "showKodelyIgnoredFiles", bool: showKodelyIgnoredFiles })
 			vscode.postMessage({ type: "maxReadFileLine", value: maxReadFileLine ?? 500 })
 			vscode.postMessage({ type: "currentApiConfigName", text: currentApiConfigName })
 			vscode.postMessage({ type: "updateExperimental", values: experiments })
@@ -257,6 +266,11 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 			vscode.postMessage({ type: "alwaysAllowSubtasks", bool: alwaysAllowSubtasks })
 			vscode.postMessage({ type: "upsertApiConfiguration", text: currentApiConfigName, apiConfiguration })
 			vscode.postMessage({ type: "telemetrySetting", text: telemetrySetting })
+			vscode.postMessage({ type: "optimizationLevel", text: optimizationLevel })
+			vscode.postMessage({ type: "maxContextWindowUsage", value: maxContextWindowUsage })
+			vscode.postMessage({ type: "useLocalRag", bool: useLocalRag })
+			vscode.postMessage({ type: "maxOutputTokens", value: maxOutputTokens })
+			vscode.postMessage({ type: "compressCodeInContext", bool: compressCodeInContext })
 			setChangeDetected(false)
 		}
 	}
@@ -282,6 +296,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 	}, [])
 
 	const providersRef = useRef<HTMLDivElement>(null)
+	const costOptimizationRef = useRef<HTMLDivElement>(null)
 	const autoApproveRef = useRef<HTMLDivElement>(null)
 	const browserRef = useRef<HTMLDivElement>(null)
 	const checkpointsRef = useRef<HTMLDivElement>(null)
@@ -295,6 +310,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 	const sections: { id: SectionName; icon: LucideIcon; ref: React.RefObject<HTMLDivElement> }[] = useMemo(
 		() => [
 			{ id: "providers", icon: Webhook, ref: providersRef },
+			{ id: "costOptimization", icon: DollarSign, ref: costOptimizationRef },
 			{ id: "autoApprove", icon: CheckCheck, ref: autoApproveRef },
 			{ id: "browser", icon: SquareMousePointer, ref: browserRef },
 			{ id: "checkpoints", icon: GitBranch, ref: checkpointsRef },
@@ -423,6 +439,17 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 					</Section>
 				</div>
 
+				<div ref={costOptimizationRef}>
+					<CostOptimizationSettings
+						optimizationLevel={optimizationLevel}
+						maxContextWindowUsage={maxContextWindowUsage}
+						useLocalRag={useLocalRag}
+						maxOutputTokens={maxOutputTokens}
+						compressCodeInContext={compressCodeInContext}
+						setCachedStateField={setCachedStateField}
+					/>
+				</div>
+
 				<div ref={autoApproveRef}>
 					<AutoApproveSettings
 						alwaysAllowReadOnly={alwaysAllowReadOnly}
@@ -474,7 +501,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 					<ContextManagementSettings
 						maxOpenTabsContext={maxOpenTabsContext}
 						maxWorkspaceFiles={maxWorkspaceFiles ?? 200}
-						showRooIgnoredFiles={showRooIgnoredFiles}
+						showKodelyIgnoredFiles={showKodelyIgnoredFiles}
 						maxReadFileLine={maxReadFileLine}
 						setCachedStateField={setCachedStateField}
 					/>

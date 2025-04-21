@@ -1,16 +1,5 @@
 import * as vscode from "vscode"
-import * as dotenvx from "@dotenvx/dotenvx"
 import * as path from "path"
-
-// Load environment variables from .env file
-try {
-	// Specify path to .env file in the project root directory
-	const envPath = path.join(__dirname, "..", ".env")
-	dotenvx.config({ path: envPath })
-} catch (e) {
-	// Silently handle environment loading errors
-	console.warn("Failed to load environment variables:", e)
-}
 
 import "./utils/path" // Necessary to have access to String.prototype.toPosix.
 
@@ -22,6 +11,8 @@ import { McpServerManager } from "./services/mcp/McpServerManager"
 import { telemetryService } from "./services/telemetry/TelemetryService"
 import { TerminalRegistry } from "./integrations/terminal/TerminalRegistry"
 import { API } from "./exports/api"
+import { CostOptimizationManager } from "./core/cost-optimization/CostOptimizationManager"
+import { LocalRagService } from "./core/cost-optimization/LocalRagService"
 import { migrateSettings } from "./utils/migrateSettings"
 
 import { handleUri, registerCommands, registerCodeActions, registerTerminalActions } from "./activate"
@@ -42,9 +33,9 @@ let extensionContext: vscode.ExtensionContext
 // Your extension is activated the very first time the command is executed.
 export async function activate(context: vscode.ExtensionContext) {
 	extensionContext = context
-	outputChannel = vscode.window.createOutputChannel("Roo-Code")
+	outputChannel = vscode.window.createOutputChannel("Kodely")
 	context.subscriptions.push(outputChannel)
-	outputChannel.appendLine("Roo-Code extension activated")
+	outputChannel.appendLine("Kodely extension activated")
 
 	// Migrate old settings to new
 	await migrateSettings(context, outputChannel)
@@ -58,8 +49,22 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Initialize terminal shell execution handlers.
 	TerminalRegistry.initialize()
 
+	// Initialize cost optimization manager
+	const costOptimizationManager = new CostOptimizationManager(context)
+
+	// Initialize local RAG service
+	const localRagService = new LocalRagService(context)
+	await localRagService.initialize()
+
+	// Index workspace files for RAG if workspace folders exist
+	if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+		localRagService.indexWorkspace(vscode.workspace.workspaceFolders).catch(error => {
+			console.error('Error indexing workspace:', error)
+		})
+	}
+
 	// Get default commands from configuration.
-	const defaultCommands = vscode.workspace.getConfiguration("roo-cline").get<string[]>("allowedCommands") || []
+	const defaultCommands = vscode.workspace.getConfiguration("kodely").get<string[]>("allowedCommands") || []
 
 	// Initialize global state if not already set.
 	if (!context.globalState.get("allowedCommands")) {
@@ -115,8 +120,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerCodeActions(context)
 	registerTerminalActions(context)
 
-	// Allows other extensions to activate once Roo is ready.
-	vscode.commands.executeCommand("roo-cline.activationCompleted")
+	// Allows other extensions to activate once Kodely is ready.
+	vscode.commands.executeCommand("kodely.activationCompleted")
 
 	// Implements the `RooCodeAPI` interface.
 	const socketPath = process.env.ROO_CODE_IPC_SOCKET_PATH
@@ -126,7 +131,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export async function deactivate() {
-	outputChannel.appendLine("Roo-Code extension deactivated")
+	outputChannel.appendLine("Kodely extension deactivated")
 	// Clean up MCP server manager
 	await McpServerManager.cleanup(extensionContext)
 	telemetryService.shutdown()

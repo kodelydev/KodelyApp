@@ -7,7 +7,7 @@
 		"editModesConfig": "Edit modes configuration",
 		"editGlobalModes": "Edit Global Modes",
 		"editProjectModes": "Edit Project Modes (.roomodes)",
-		"createModeHelpText": "Hit the + to create a new custom mode, or just ask Roo in chat to create one for you!"
+		"createModeHelpText": "Hit the + to create a new custom mode, or just ask Kodely in chat to create one for you!"
 	},
 	"apiConfiguration": {
 		"title": "API Configuration",
@@ -30,18 +30,18 @@
 	"roleDefinition": {
 		"title": "Role Definition",
 		"resetToDefault": "Reset to default",
-		"description": "Define Roo's expertise and personality for this mode. This description shapes how Roo presents itself and approaches tasks."
+		"description": "Define Kodely's expertise and personality for this mode. This description shapes how Kodely presents itself and approaches tasks."
 	},
 	"customInstructions": {
 		"title": "Mode-specific Custom Instructions (optional)",
 		"resetToDefault": "Reset to default",
 		"description": "Add behavioral guidelines specific to {{modeName}} mode.",
-		"loadFromFile": "Custom instructions specific to {{mode}} mode can also be loaded from the <span>.roo/rules-{{slug}}/</span> folder in your workspace (.roorules-{{slug}} and .clinerules-{{slug}} are deprecated and will stop working soon)."
+		"loadFromFile": "Custom instructions specific to {{mode}} mode can also be loaded from the <span>.Kodely/rules-{{slug}}/</span> folder in your workspace (.Kodelyrules-{{slug}} and .clinerules-{{slug}} are deprecated and will stop working soon)."
 	},
 	"globalCustomInstructions": {
 		"title": "Custom Instructions for All Modes",
-		"description": "These instructions apply to all modes. They provide a base set of behaviors that can be enhanced by mode-specific instructions below.\nIf you would like Roo to think and speak in a different language than your editor display language ({{language}}), you can specify it here.",
-		"loadFromFile": "Instructions can also be loaded from the <span>.roo/rules/</span> folder in your workspace (.roorules and .clinerules are deprecated and will stop working soon)."
+		"description": "These instructions apply to all modes. They provide a base set of behaviors that can be enhanced by mode-specific instructions below.\nIf you would like Kodely to think and speak in a different language than your editor display language ({{language}}), you can specify it here.",
+		"loadFromFile": "Instructions can also be loaded from the <span>.Kodely/rules/</span> folder in your workspace (.Kodelyrules and .clinerules are deprecated and will stop working soon)."
 	},
 	"systemPrompt": {
 		"preview": "Preview System Prompt",
@@ -62,7 +62,7 @@
 		"types": {
 			"ENHANCE": {
 				"label": "Enhance Prompt",
-				"description": "Use prompt enhancement to get tailored suggestions or improvements for your inputs. This ensures Roo understands your intent and provides the best possible responses. Available via the ✨ icon in chat."
+				"description": "Use prompt enhancement to get tailored suggestions or improvements for your inputs. This ensures Kodely understands your intent and provides the best possible responses. Available via the ✨ icon in chat."
 			},
 			"EXPLAIN": {
 				"label": "Explain Code",
@@ -100,7 +100,7 @@
 	},
 	"advancedSystemPrompt": {
 		"title": "Advanced: Override System Prompt",
-		"description": "You can completely replace the system prompt for this mode (aside from the role definition and custom instructions) by creating a file at <span>.roo/system-prompt-{{slug}}</span> in your workspace. This is a very advanced feature that bypasses built-in safeguards and consistency checks (especially around tool usage), so be careful!"
+		"description": "You can completely replace the system prompt for this mode (aside from the role definition and custom instructions) by creating a file at <span>.Kodely/system-prompt-{{slug}}</span> in your workspace. This is a very advanced feature that bypasses built-in safeguards and consistency checks (especially around tool usage), so be careful!"
 	},
 	"createModeDialog": {
 		"title": "Create New Mode",
@@ -127,7 +127,7 @@
 		},
 		"roleDefinition": {
 			"label": "Role Definition",
-			"description": "Define Roo's expertise and personality for this mode."
+			"description": "Define Kodely's expertise and personality for this mode."
 		},
 		"tools": {
 			"label": "Available Tools",

@@ -9,23 +9,19 @@ const generateDiagnosticText = (diagnostics?: any[]) => {
 }
 
 export const createPrompt = (template: string, params: PromptParams): string => {
-	return template.replace(/\${(.*?)}/g, (_, key) => {
-		if (key === "diagnosticText") {
-			return generateDiagnosticText(params["diagnostics"] as any[])
-		} else if (params.hasOwnProperty(key)) {
-			// Ensure the value is treated as a string for replacement
-			const value = params[key]
-			if (typeof value === "string") {
-				return value
-			} else {
-				// Convert non-string values to string for replacement
-				return String(value)
-			}
+	let result = template
+	for (const [key, value] of Object.entries(params)) {
+		if (key === "diagnostics") {
+			result = result.replaceAll("${diagnosticText}", generateDiagnosticText(value as any[]))
 		} else {
-			// If the placeholder key is not in params, replace with empty string
-			return ""
+			result = result.replaceAll(`\${${key}}`, value as string)
 		}
-	})
+	}
+
+	// Replace any remaining placeholders with empty strings
+	result = result.replaceAll(/\${[^}]*}/g, "")
+
+	return result
 }
 
 interface SupportPromptConfig {

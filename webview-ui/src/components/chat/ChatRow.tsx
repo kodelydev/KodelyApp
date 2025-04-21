@@ -6,13 +6,18 @@ import { VSCodeBadge, VSCodeButton, VSCodeProgressRing } from "@vscode/webview-u
 
 import { Button } from "@/components/ui"
 
-import { useCopyToClipboard } from "@src/utils/clipboard"
-import { safeJsonParse } from "@src/utils/json"
-import { ClineApiReqInfo, ClineAskUseMcpServer, ClineMessage, ClineSayTool } from "@roo/shared/ExtensionMessage"
-import { COMMAND_OUTPUT_STRING } from "@roo/shared/combineCommandSequences"
-import { useExtensionState } from "@src/context/ExtensionStateContext"
-import { findMatchingResourceOrTemplate } from "@src/utils/mcp"
-import { vscode } from "@src/utils/vscode"
+import { useCopyToClipboard } from "../../utils/clipboard"
+import { safeJsonParse } from "../../utils/json"
+import {
+	ClineApiReqInfo,
+	ClineAskUseMcpServer,
+	ClineMessage,
+	ClineSayTool,
+} from "../../../../src/shared/ExtensionMessage"
+import { COMMAND_OUTPUT_STRING } from "../../../../src/shared/combineCommandSequences"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { findMatchingResourceOrTemplate } from "../../utils/mcp"
+import { vscode } from "../../utils/vscode"
 import CodeAccordian, { removeLeadingNonAlphanumeric } from "../common/CodeAccordian"
 import CodeBlock, { CODE_BLOCK_BG_COLOR } from "../common/CodeBlock"
 import CommandOutputViewer from "../common/CommandOutputViewer"
@@ -916,7 +921,7 @@ export const ChatRowContent = ({
 									</div>
 									<br />
 									<a
-										href="http://docs.roocode.com/troubleshooting/shell-integration/"
+										href="http://docs.kodelyai.com/troubleshooting/shell-integration/"
 										style={{ color: "inherit", textDecoration: "underline" }}>
 										{t("chat:shellIntegration.troubleshooting")}
 									</a>

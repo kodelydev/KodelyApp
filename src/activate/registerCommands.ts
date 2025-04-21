@@ -9,7 +9,7 @@ import { ClineProvider } from "../core/webview/ClineProvider"
 export function getVisibleProviderOrLog(outputChannel: vscode.OutputChannel): ClineProvider | undefined {
 	const visibleProvider = ClineProvider.getVisibleInstance()
 	if (!visibleProvider) {
-		outputChannel.appendLine("Cannot find any visible Roo Code instances.")
+		outputChannel.appendLine("Cannot find any visible Kodely instances.")
 		return undefined
 	}
 	return visibleProvider
@@ -62,40 +62,40 @@ export const registerCommands = (options: RegisterCommandOptions) => {
 
 const getCommandsMap = ({ context, outputChannel, provider }: RegisterCommandOptions) => {
 	return {
-		"roo-cline.activationCompleted": () => {},
-		"roo-cline.plusButtonClicked": async () => {
+		"kodely.activationCompleted": () => {},
+		"kodely.plusButtonClicked": async () => {
 			const visibleProvider = getVisibleProviderOrLog(outputChannel)
 			if (!visibleProvider) return
 			await visibleProvider.removeClineFromStack()
 			await visibleProvider.postStateToWebview()
 			await visibleProvider.postMessageToWebview({ type: "action", action: "chatButtonClicked" })
 		},
-		"roo-cline.mcpButtonClicked": () => {
+		"kodely.mcpButtonClicked": () => {
 			const visibleProvider = getVisibleProviderOrLog(outputChannel)
 			if (!visibleProvider) return
 			visibleProvider.postMessageToWebview({ type: "action", action: "mcpButtonClicked" })
 		},
-		"roo-cline.promptsButtonClicked": () => {
+		"kodely.promptsButtonClicked": () => {
 			const visibleProvider = getVisibleProviderOrLog(outputChannel)
 			if (!visibleProvider) return
 			visibleProvider.postMessageToWebview({ type: "action", action: "promptsButtonClicked" })
 		},
-		"roo-cline.popoutButtonClicked": () => openClineInNewTab({ context, outputChannel }),
-		"roo-cline.openInNewTab": () => openClineInNewTab({ context, outputChannel }),
-		"roo-cline.settingsButtonClicked": () => {
+		"kodely.popoutButtonClicked": () => openClineInNewTab({ context, outputChannel }),
+		"kodely.openInNewTab": () => openClineInNewTab({ context, outputChannel }),
+		"kodely.settingsButtonClicked": () => {
 			const visibleProvider = getVisibleProviderOrLog(outputChannel)
 			if (!visibleProvider) return
 			visibleProvider.postMessageToWebview({ type: "action", action: "settingsButtonClicked" })
 		},
-		"roo-cline.historyButtonClicked": () => {
+		"kodely.historyButtonClicked": () => {
 			const visibleProvider = getVisibleProviderOrLog(outputChannel)
 			if (!visibleProvider) return
 			visibleProvider.postMessageToWebview({ type: "action", action: "historyButtonClicked" })
 		},
-		"roo-cline.helpButtonClicked": () => {
-			vscode.env.openExternal(vscode.Uri.parse("https://docs.roocode.com"))
+		"kodely.helpButtonClicked": () => {
+			vscode.env.openExternal(vscode.Uri.parse("https://docs.kodely.ai"))
 		},
-		"roo-cline.showHumanRelayDialog": (params: { requestId: string; promptText: string }) => {
+		"kodely.showHumanRelayDialog": (params: { requestId: string; promptText: string }) => {
 			const panel = getPanel()
 
 			if (panel) {
@@ -106,18 +106,18 @@ const getCommandsMap = ({ context, outputChannel, provider }: RegisterCommandOpt
 				})
 			}
 		},
-		"roo-cline.registerHumanRelayCallback": registerHumanRelayCallback,
-		"roo-cline.unregisterHumanRelayCallback": unregisterHumanRelayCallback,
-		"roo-cline.handleHumanRelayResponse": handleHumanRelayResponse,
-		"roo-cline.newTask": handleNewTask,
-		"roo-cline.setCustomStoragePath": async () => {
+		"kodely.registerHumanRelayCallback": registerHumanRelayCallback,
+		"kodely.unregisterHumanRelayCallback": unregisterHumanRelayCallback,
+		"kodely.handleHumanRelayResponse": handleHumanRelayResponse,
+		"kodely.newTask": handleNewTask,
+		"kodely.setCustomStoragePath": async () => {
 			const { promptForCustomStoragePath } = await import("../shared/storagePathManager")
 			await promptForCustomStoragePath()
 		},
-		"roo-cline.focusInput": () => {
+		"kodely.focusInput": () => {
 			provider.postMessageToWebview({ type: "action", action: "focusInput" })
 		},
-		"roo.acceptInput": () => {
+		"kodely.acceptInput": () => {
 			const visibleProvider = getVisibleProviderOrLog(outputChannel)
 			if (!visibleProvider) return
 			visibleProvider.postMessageToWebview({ type: "acceptInput" })
@@ -143,7 +143,7 @@ export const openClineInNewTab = async ({ context, outputChannel }: Omit<Registe
 
 	const targetCol = hasVisibleEditors ? Math.max(lastCol + 1, 1) : vscode.ViewColumn.Two
 
-	const newPanel = vscode.window.createWebviewPanel(ClineProvider.tabPanelId, "Roo Code", targetCol, {
+	const newPanel = vscode.window.createWebviewPanel(ClineProvider.tabPanelId, "Kodely", targetCol, {
 		enableScripts: true,
 		retainContextWhenHidden: true,
 		localResourceRoots: [context.extensionUri],
