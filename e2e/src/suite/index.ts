@@ -12,7 +12,7 @@ declare global {
 }
 
 export async function run() {
-	const extension = vscode.extensions.getExtension<KodelyAPI>("KodelyAI.kodely")
+	const extension = vscode.extensions.getExtension<KodelyAPI>("kodelydev.kodely")
 
 	if (!extension) {
 		throw new Error("Extension not found")

@@ -29,11 +29,11 @@ const Announcement = ({ version, hideAnnouncement }: AnnouncementProps) => {
 
 	const redditLink = (
 		<VSCodeLink
-			href="https://reddit.com/r/KodelyAI"
+			href="https://reddit.com/r/Kodely"
 			onClick={(e) => {
 				e.preventDefault()
 				window.postMessage(
-					{ type: "action", action: "openExternal", data: { url: "https://reddit.com/r/KodelyAI" } },
+					{ type: "action", action: "openExternal", data: { url: "https://reddit.com/r/Kodely" } },
 					"*",
 				)
 			}}>

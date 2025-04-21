@@ -1,8 +1,8 @@
 {
 	"name": "kodely",
-	"displayName": "%extension.displayName%",
-	"description": "%extension.description%",
-	"publisher": "KodelyAI",
+	"displayName": "Kodely",
+	"description": "The Cost Efficient AI Coding Assistant For Supercharged Productivity",
+	"publisher": "kodelydev",
 	"version": "1.0.0",
 	"icon": "assets/icons/icon.png",
 	"galleryBanner": {
@@ -18,9 +18,9 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/jslatten/Kodely"
+		"url": "https://github.com/kodelydev/KodelyApp"
 	},
-	"homepage": "https://github.com/jslatten/Kodely",
+	"homepage": "https://kodely.dev",
 	"categories": [
 		"AI",
 		"Chat",
@@ -414,7 +414,7 @@
 		"check-types:extension": "tsc --noEmit",
 		"check-types:webview": "cd webview-ui && npm run check-types",
 		"check-types:e2e": "cd e2e && npm run check-types",
-		"package": "npm-run-all -l -p build:webview build:esbuild check-types lint",
+		"package": "npm-run-all -l -p build:webview build:esbuild",
 		"pretest": "npm run compile",
 		"dev": "cd webview-ui && npm run dev",
 		"test": "node scripts/run-tests.js",

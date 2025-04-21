@@ -4,7 +4,7 @@ Kodely is a VSCode extension that provides an AI coding assistant focused on opt
 
 <div align="center">
   <p align="center">
-  <img src="assets/docs/demo.gif" width="100%" />
+  Screenshot to be added.
   </p>
 </div>
 
@@ -99,7 +99,7 @@ Kodely provides several settings to help you optimize your LLM API costs:
 1. **Clone** the repo:
 
 ```sh
-git clone https://github.com/KodelyAI/Kodely.git
+git clone https://github.com/kodelydev/KodelyApp.git
 ```
 
 2. **Install dependencies**:

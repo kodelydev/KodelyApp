@@ -51,8 +51,8 @@ export const About = ({ version, telemetrySetting, setTelemetrySetting, classNam
 					<Trans
 						i18nKey="settings:footer.feedback"
 						components={{
-							githubLink: <VSCodeLink href="https://github.com/KodelyAI/Kodely" />,
-							redditLink: <VSCodeLink href="https://reddit.com/r/KodelyAI" />,
+							githubLink: <VSCodeLink href="https://github.com/kodelydev/KodelyApp" />,
+							redditLink: <VSCodeLink href="https://reddit.com/r/Kodely" />,
 							discordLink: <VSCodeLink href="https://discord.gg/kodely" />,
 						}}
 					/>

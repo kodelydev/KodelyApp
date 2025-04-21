@@ -921,7 +921,7 @@ export const ChatRowContent = ({
 									</div>
 									<br />
 									<a
-										href="http://docs.kodelyai.com/troubleshooting/shell-integration/"
+										href="http://docs.kodely.dev/troubleshooting/shell-integration/"
 										style={{ color: "inherit", textDecoration: "underline" }}>
 										{t("chat:shellIntegration.troubleshooting")}
 									</a>
