@@ -20,9 +20,6 @@ export const formatResponse = {
 
 	toolError: (error?: string) => `The tool execution failed with the following error:\n<error>\n${error}\n</error>`,
 
-	rooIgnoreError: (path: string) =>
-		`Access to ${path} is blocked by the .rooignore file settings. You must try to continue in the task without using this file, or ask the user to update the .rooignore file.`,
-
 	kodelyIgnoreError: (path: string) =>
 		`Access to ${path} is blocked by the .kodelyignore file settings. You must try to continue in the task without using this file, or ask the user to update the .kodelyignore file.`,
 
@@ -100,10 +97,10 @@ Otherwise, if you have not completed the task and do not need additional informa
 				return aParts.length - bParts.length
 			})
 
-		let rooIgnoreParsed: string[] = sorted
+		let kodelyIgnoreParsed: string[] = sorted
 
 		if (kodelyIgnoreController) {
-			rooIgnoreParsed = []
+			kodelyIgnoreParsed = []
 			for (const filePath of sorted) {
 				// path is relative to absolute path, not cwd
 				// validateAccess expects either path relative to cwd or absolute path
@@ -113,24 +110,24 @@ Otherwise, if you have not completed the task and do not need additional informa
 
 				if (isIgnored) {
 					// If file is ignored and we're not showing ignored files, skip it
-					if (!showRooIgnoredFiles) {
+					if (!showKodelyIgnoredFiles) {
 						continue
 					}
 					// Otherwise, mark it with a lock symbol
-					rooIgnoreParsed.push(LOCK_TEXT_SYMBOL + " " + filePath)
+					kodelyIgnoreParsed.push(LOCK_TEXT_SYMBOL + " " + filePath)
 				} else {
-					rooIgnoreParsed.push(filePath)
+					kodelyIgnoreParsed.push(filePath)
 				}
 			}
 		}
 		if (didHitLimit) {
-			return `${rooIgnoreParsed.join(
+			return `${kodelyIgnoreParsed.join(
 				"\n",
 			)}\n\n(File list truncated. Use list_files on specific subdirectories if you need to explore further.)`
-		} else if (rooIgnoreParsed.length === 0 || (rooIgnoreParsed.length === 1 && rooIgnoreParsed[0] === "")) {
+		} else if (kodelyIgnoreParsed.length === 0 || (kodelyIgnoreParsed.length === 1 && kodelyIgnoreParsed[0] === "")) {
 			return "No files found."
 		} else {
-			return rooIgnoreParsed.join("\n")
+			return kodelyIgnoreParsed.join("\n")
 		}
 	},
 

@@ -150,7 +150,7 @@ export async function searchAndReplaceTool(
 			const { newProblemsMessage, userEdits, finalContent } = await cline.diffViewProvider.saveChanges()
 
 			if (relPath) {
-				await cline.getFileContextTracker().trackFileContext(relPath, "roo_edited" as RecordSource)
+				await cline.getFileContextTracker().trackFileContext(relPath, "kodely_edited" as RecordSource)
 			}
 
 			cline.didEditFile = true // used to determine if we should wait for busy terminal to update before sending api request

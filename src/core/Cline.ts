@@ -979,7 +979,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 			})
 		}
 
-		const rooIgnoreInstructions = this.kodelyIgnoreController?.getInstructions()
+		const kodelyIgnoreInstructions = this.kodelyIgnoreController?.getInstructions()
 
 		const {
 			browserViewportSize,
@@ -1011,7 +1011,7 @@ export class Cline extends EventEmitter<ClineEvents> {
 				experiments,
 				enableMcpServerCreation,
 				language,
-				rooIgnoreInstructions,
+				kodelyIgnoreInstructions,
 			)
 		})()
 

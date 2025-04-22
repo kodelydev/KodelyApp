@@ -156,17 +156,17 @@ function formatDirectoryContent(dirPath: string, files: Array<{ filename: string
  * Load rule files from the specified directory
  */
 export async function loadRuleFiles(cwd: string): Promise<string> {
-	// Check for .roo/rules/ directory
-	const rooRulesDir = path.join(cwd, ".roo", "rules")
-	if (await directoryExists(rooRulesDir)) {
-		const files = await readTextFilesFromDirectory(rooRulesDir)
+	// Check for .kodely/rules/ directory
+	const kodelyRulesDir = path.join(cwd, ".kodely", "rules")
+	if (await directoryExists(kodelyRulesDir)) {
+		const files = await readTextFilesFromDirectory(kodelyRulesDir)
 		if (files.length > 0) {
-			return formatDirectoryContent(rooRulesDir, files)
+			return formatDirectoryContent(kodelyRulesDir, files)
 		}
 	}
 
 	// Fall back to existing behavior
-	const ruleFiles = [".roorules", ".clinerules"]
+	const ruleFiles = [".kodelyrules", ".clinerules"]
 
 	for (const file of ruleFiles) {
 		const content = await safeReadFile(path.join(cwd, file))
@@ -183,7 +183,7 @@ export async function addCustomInstructions(
 	globalCustomInstructions: string,
 	cwd: string,
 	mode: string,
-	options: { language?: string; rooIgnoreInstructions?: string } = {},
+	options: { language?: string; kodelyIgnoreInstructions?: string } = {},
 ): Promise<string> {
 	const sections = []
 
@@ -192,8 +192,8 @@ export async function addCustomInstructions(
 	let usedRuleFile = ""
 
 	if (mode) {
-		// Check for .roo/rules-${mode}/ directory
-		const modeRulesDir = path.join(cwd, ".roo", `rules-${mode}`)
+		// Check for .kodely/rules-${mode}/ directory
+		const modeRulesDir = path.join(cwd, ".kodely", `rules-${mode}`)
 		if (await directoryExists(modeRulesDir)) {
 			const files = await readTextFilesFromDirectory(modeRulesDir)
 			if (files.length > 0) {
@@ -204,10 +204,10 @@ export async function addCustomInstructions(
 
 		// If no directory exists, fall back to existing behavior
 		if (!modeRuleContent) {
-			const rooModeRuleFile = `.roorules-${mode}`
-			modeRuleContent = await safeReadFile(path.join(cwd, rooModeRuleFile))
+			const kodelyModeRuleFile = `.kodelyrules-${mode}`
+			modeRuleContent = await safeReadFile(path.join(cwd, kodelyModeRuleFile))
 			if (modeRuleContent) {
-				usedRuleFile = rooModeRuleFile
+				usedRuleFile = kodelyModeRuleFile
 			} else {
 				const clineModeRuleFile = `.clinerules-${mode}`
 				modeRuleContent = await safeReadFile(path.join(cwd, clineModeRuleFile))
@@ -241,15 +241,15 @@ export async function addCustomInstructions(
 
 	// Add mode-specific rules first if they exist
 	if (modeRuleContent && modeRuleContent.trim()) {
-		if (usedRuleFile.includes(path.join(".roo", `rules-${mode}`))) {
+		if (usedRuleFile.includes(path.join(".kodely", `rules-${mode}`))) {
 			rules.push(modeRuleContent.trim())
 		} else {
 			rules.push(`# Rules from ${usedRuleFile}:\n${modeRuleContent}`)
 		}
 	}
 
-	if (options.rooIgnoreInstructions) {
-		rules.push(options.rooIgnoreInstructions)
+	if (options.kodelyIgnoreInstructions) {
+		rules.push(options.kodelyIgnoreInstructions)
 	}
 
 	// Add generic rules

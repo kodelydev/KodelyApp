@@ -123,8 +123,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Allows other extensions to activate once Kodely is ready.
 	vscode.commands.executeCommand("kodely.activationCompleted")
 
-	// Implements the `RooCodeAPI` interface.
-	const socketPath = process.env.ROO_CODE_IPC_SOCKET_PATH
+	// Implements the `KodelyCodeAPI` interface.
+	const socketPath = process.env.KODELY_CODE_IPC_SOCKET_PATH
 	const enableLogging = typeof socketPath === "string"
 	return new API(outputChannel, provider, socketPath, enableLogging)
 }

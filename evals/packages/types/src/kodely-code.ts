@@ -1,10 +1,6 @@
-// Updates to this file will automatically propgate to src/exports/types.ts
-// via a pre-commit hook. If you want to update the types before committing you
-// can run `npm run generate-types`.
-
 import { z } from "zod"
 
-import { Equals, Keys, AssertEqual } from "../utils/type-fu"
+import { Equals, Keys, AssertEqual } from "./utils.js"
 
 /**
  * ProviderName
@@ -22,13 +18,13 @@ export const providerNames = [
 	"lmstudio",
 	"gemini",
 	"openai-native",
+	"xai",
 	"mistral",
 	"deepseek",
 	"unbound",
 	"requesty",
 	"human-relay",
 	"fake-ai",
-	"xai",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -44,6 +40,19 @@ export const toolGroups = ["read", "edit", "browser", "command", "mcp", "modes"]
 export const toolGroupsSchema = z.enum(toolGroups)
 
 export type ToolGroup = z.infer<typeof toolGroupsSchema>
+
+/**
+ * CheckpointStorage
+ */
+
+export const checkpointStorages = ["task", "workspace"] as const
+
+export const checkpointStoragesSchema = z.enum(checkpointStorages)
+
+export type CheckpointStorage = z.infer<typeof checkpointStoragesSchema>
+
+export const isCheckpointStorage = (value: string): value is CheckpointStorage =>
+	checkpointStorages.includes(value as CheckpointStorage)
 
 /**
  * Language
@@ -84,22 +93,11 @@ export const telemetrySettingsSchema = z.enum(telemetrySettings)
 export type TelemetrySetting = z.infer<typeof telemetrySettingsSchema>
 
 /**
- * ReasoningEffort
- */
-
-export const reasoningEfforts = ["low", "medium", "high"] as const
-
-export const reasoningEffortsSchema = z.enum(reasoningEfforts)
-
-export type ReasoningEffort = z.infer<typeof reasoningEffortsSchema>
-
-/**
  * ModelInfo
  */
 
 export const modelInfoSchema = z.object({
 	maxTokens: z.number().nullish(),
-	maxThinkingTokens: z.number().nullish(),
 	contextWindow: z.number(),
 	supportsImages: z.boolean().optional(),
 	supportsComputerUse: z.boolean().optional(),
@@ -109,11 +107,8 @@ export const modelInfoSchema = z.object({
 	cacheWritesPrice: z.number().optional(),
 	cacheReadsPrice: z.number().optional(),
 	description: z.string().optional(),
-	reasoningEffort: reasoningEffortsSchema.optional(),
+	reasoningEffort: z.enum(["low", "medium", "high"]).optional(),
 	thinking: z.boolean().optional(),
-	minTokensPerCachePoint: z.number().optional(),
-	maxCachePoints: z.number().optional(),
-	cachableFields: z.array(z.string()).optional(),
 })
 
 export type ModelInfo = z.infer<typeof modelInfoSchema>
@@ -145,7 +140,6 @@ export const historyItemSchema = z.object({
 	cacheReads: z.number().optional(),
 	totalCost: z.number(),
 	size: z.number().optional(),
-	workspace: z.string().optional(),
 })
 
 export type HistoryItem = z.infer<typeof historyItemSchema>
@@ -277,7 +271,7 @@ export type CustomSupportPrompts = z.infer<typeof customSupportPromptsSchema>
  * ExperimentId
  */
 
-export const experimentIds = ["search_and_replace", "insert_content", "powerSteering"] as const
+export const experimentIds = ["search_and_replace", "insert_content", "powerSteering", "append_to_file"] as const
 
 export const experimentIdsSchema = z.enum(experimentIds)
 
@@ -291,10 +285,12 @@ const experimentsSchema = z.object({
 	search_and_replace: z.boolean(),
 	insert_content: z.boolean(),
 	powerSteering: z.boolean(),
+	append_to_file: z.boolean(),
 })
 
 export type Experiments = z.infer<typeof experimentsSchema>
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type _AssertExperiments = AssertEqual<Equals<ExperimentId, Keys<Experiments>>>
 
 /**
@@ -310,12 +306,12 @@ export const providerSettingsSchema = z.object({
 	anthropicUseAuthToken: z.boolean().optional(),
 	// Glama
 	glamaModelId: z.string().optional(),
-	glamaModelInfo: modelInfoSchema.nullish(),
+	glamaModelInfo: modelInfoSchema.optional(),
 	glamaApiKey: z.string().optional(),
 	// OpenRouter
 	openRouterApiKey: z.string().optional(),
 	openRouterModelId: z.string().optional(),
-	openRouterModelInfo: modelInfoSchema.nullish(),
+	openRouterModelInfo: modelInfoSchema.optional(),
 	openRouterBaseUrl: z.string().optional(),
 	openRouterSpecificProvider: z.string().optional(),
 	openRouterUseMiddleOutTransform: z.boolean().optional(),
@@ -338,11 +334,9 @@ export const providerSettingsSchema = z.object({
 	// OpenAI
 	openAiBaseUrl: z.string().optional(),
 	openAiApiKey: z.string().optional(),
-	openAiHostHeader: z.string().optional(),
-	openAiLegacyFormat: z.boolean().optional(),
 	openAiR1FormatEnabled: z.boolean().optional(),
 	openAiModelId: z.string().optional(),
-	openAiCustomModelInfo: modelInfoSchema.nullish(),
+	openAiCustomModelInfo: modelInfoSchema.optional(),
 	openAiUseAzure: z.boolean().optional(),
 	azureApiVersion: z.string().optional(),
 	openAiStreamingEnabled: z.boolean().optional(),
@@ -368,6 +362,8 @@ export const providerSettingsSchema = z.object({
 	googleGeminiBaseUrl: z.string().optional(),
 	// OpenAI Native
 	openAiNativeApiKey: z.string().optional(),
+	// XAI
+	xaiApiKey: z.string().optional(),
 	// Mistral
 	mistralApiKey: z.string().optional(),
 	mistralCodestralUrl: z.string().optional(),
@@ -377,23 +373,19 @@ export const providerSettingsSchema = z.object({
 	// Unbound
 	unboundApiKey: z.string().optional(),
 	unboundModelId: z.string().optional(),
-	unboundModelInfo: modelInfoSchema.nullish(),
+	unboundModelInfo: modelInfoSchema.optional(),
 	// Requesty
 	requestyApiKey: z.string().optional(),
 	requestyModelId: z.string().optional(),
-	requestyModelInfo: modelInfoSchema.nullish(),
-	// X.AI (Grok)
-	xaiApiKey: z.string().optional(),
+	requestyModelInfo: modelInfoSchema.optional(),
 	// Claude 3.7 Sonnet Thinking
-	modelMaxTokens: z.number().optional(),
-	modelMaxThinkingTokens: z.number().optional(),
+	modelMaxTokens: z.number().optional(), // Currently only used by Anthropic hybrid thinking models.
+	modelMaxThinkingTokens: z.number().optional(), // Currently only used by Anthropic hybrid thinking models.
 	// Generic
 	includeMaxTokens: z.boolean().optional(),
 	modelTemperature: z.number().nullish(),
-	reasoningEffort: reasoningEffortsSchema.optional(),
+	reasoningEffort: z.enum(["low", "medium", "high"]).optional(),
 	rateLimitSeconds: z.number().optional(),
-	diffEnabled: z.boolean().optional(),
-	fuzzyMatchThreshold: z.number().optional(),
 	// Fake AI
 	fakeAi: z.unknown().optional(),
 })
@@ -439,14 +431,14 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	// OpenAI
 	openAiBaseUrl: undefined,
 	openAiApiKey: undefined,
-	openAiHostHeader: undefined,
-	openAiLegacyFormat: undefined,
 	openAiR1FormatEnabled: undefined,
 	openAiModelId: undefined,
 	openAiCustomModelInfo: undefined,
 	openAiUseAzure: undefined,
 	azureApiVersion: undefined,
 	openAiStreamingEnabled: undefined,
+	// xAI
+	xaiApiKey: undefined,
 	// Ollama
 	ollamaModelId: undefined,
 	ollamaBaseUrl: undefined,
@@ -483,12 +475,8 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	modelTemperature: undefined,
 	reasoningEffort: undefined,
 	rateLimitSeconds: undefined,
-	diffEnabled: undefined,
-	fuzzyMatchThreshold: undefined,
 	// Fake AI
 	fakeAi: undefined,
-	// X.AI (Grok)
-	xaiApiKey: undefined,
 }
 
 export const PROVIDER_SETTINGS_KEYS = Object.keys(providerSettingsRecord) as Keys<ProviderSettings>[]
@@ -505,13 +493,6 @@ export const globalSettingsSchema = z.object({
 	lastShownAnnouncementId: z.string().optional(),
 	customInstructions: z.string().optional(),
 	taskHistory: z.array(historyItemSchema).optional(),
-
-	// Cost optimization settings
-	optimizationLevel: z.enum(["low", "balanced", "high"]).optional(),
-	maxContextWindowUsage: z.number().min(10).max(100).optional(),
-	useLocalRag: z.boolean().optional(),
-	maxOutputTokens: z.number().min(100).max(10000).optional(),
-	compressCodeInContext: z.boolean().optional(),
 
 	autoApprovalEnabled: z.boolean().optional(),
 	alwaysAllowReadOnly: z.boolean().optional(),
@@ -533,9 +514,9 @@ export const globalSettingsSchema = z.object({
 	screenshotQuality: z.number().optional(),
 	remoteBrowserEnabled: z.boolean().optional(),
 	remoteBrowserHost: z.string().optional(),
-	cachedChromeHostUrl: z.string().optional(),
 
 	enableCheckpoints: z.boolean().optional(),
+	checkpointStorage: checkpointStoragesSchema.optional(),
 
 	ttsEnabled: z.boolean().optional(),
 	ttsSpeed: z.number().optional(),
@@ -556,7 +537,6 @@ export const globalSettingsSchema = z.object({
 	terminalZshP10k: z.boolean().optional(),
 	terminalZdotdir: z.boolean().optional(),
 
-	rateLimitSeconds: z.number().optional(),
 	diffEnabled: z.boolean().optional(),
 	fuzzyMatchThreshold: z.number().optional(),
 	experiments: experimentsSchema.optional(),
@@ -589,13 +569,6 @@ const globalSettingsRecord: GlobalSettingsRecord = {
 	customInstructions: undefined,
 	taskHistory: undefined,
 
-	// Cost optimization settings
-	optimizationLevel: undefined,
-	maxContextWindowUsage: undefined,
-	useLocalRag: undefined,
-	maxOutputTokens: undefined,
-	compressCodeInContext: undefined,
-
 	autoApprovalEnabled: undefined,
 	alwaysAllowReadOnly: undefined,
 	alwaysAllowReadOnlyOutsideWorkspace: undefined,
@@ -618,6 +591,7 @@ const globalSettingsRecord: GlobalSettingsRecord = {
 	remoteBrowserHost: undefined,
 
 	enableCheckpoints: undefined,
+	checkpointStorage: undefined,
 
 	ttsEnabled: undefined,
 	ttsSpeed: undefined,
@@ -638,7 +612,6 @@ const globalSettingsRecord: GlobalSettingsRecord = {
 	terminalZshP10k: undefined,
 	terminalZdotdir: undefined,
 
-	rateLimitSeconds: undefined,
 	diffEnabled: undefined,
 	fuzzyMatchThreshold: undefined,
 	experiments: undefined,
@@ -656,7 +629,6 @@ const globalSettingsRecord: GlobalSettingsRecord = {
 	customModePrompts: undefined,
 	customSupportPrompts: undefined,
 	enhancementApiConfigId: undefined,
-	cachedChromeHostUrl: undefined,
 }
 
 export const GLOBAL_SETTINGS_KEYS = Object.keys(globalSettingsRecord) as Keys<GlobalSettings>[]
@@ -668,6 +640,8 @@ export const GLOBAL_SETTINGS_KEYS = Object.keys(globalSettingsRecord) as Keys<Gl
 export const kodelyCodeSettingsSchema = providerSettingsSchema.merge(globalSettingsSchema)
 
 export type KodelyCodeSettings = GlobalSettings & ProviderSettings
+
+export const KODELY_CODE_SETTINGS_KEYS = [...GLOBAL_SETTINGS_KEYS, ...PROVIDER_SETTINGS_KEYS] as Keys<KodelyCodeSettings>[]
 
 /**
  * SecretState
@@ -688,7 +662,6 @@ export type SecretState = Pick<
 	| "mistralApiKey"
 	| "unboundApiKey"
 	| "requestyApiKey"
-	| "xaiApiKey"
 >
 
 type SecretStateRecord = Record<Keys<SecretState>, undefined>
@@ -707,7 +680,6 @@ const secretStateRecord: SecretStateRecord = {
 	mistralApiKey: undefined,
 	unboundApiKey: undefined,
 	requestyApiKey: undefined,
-	xaiApiKey: undefined,
 }
 
 export const SECRET_STATE_KEYS = Object.keys(secretStateRecord) as Keys<SecretState>[]
@@ -776,7 +748,6 @@ export const clineSays = [
 	"mcp_server_response",
 	"new_task_started",
 	"new_task",
-	"subtask_result",
 	"checkpoint_saved",
 	"kodelyignore_error",
 	"diff_error",
@@ -832,6 +803,10 @@ export const tokenUsageSchema = z.object({
 
 export type TokenUsage = z.infer<typeof tokenUsageSchema>
 
+/**
+ * ToolName
+ */
+
 export const toolNames = [
 	"execute_command",
 	"read_file",
@@ -876,6 +851,7 @@ export type ToolUsage = z.infer<typeof toolUsageSchema>
  */
 
 export enum KodelyCodeEventName {
+	Connect = "connect",
 	Message = "message",
 	TaskCreated = "taskCreated",
 	TaskStarted = "taskStarted",
@@ -910,23 +886,3 @@ export const kodelyCodeEventsSchema = z.object({
 })
 
 export type KodelyCodeEvents = z.infer<typeof kodelyCodeEventsSchema>
-
-/**
- * TypeDefinition
- */
-
-export type TypeDefinition = {
-	schema: z.ZodTypeAny
-	identifier: string
-}
-
-export const typeDefinitions: TypeDefinition[] = [
-	{ schema: providerSettingsSchema, identifier: "ProviderSettings" },
-	{ schema: globalSettingsSchema, identifier: "GlobalSettings" },
-	{ schema: clineMessageSchema, identifier: "ClineMessage" },
-	{ schema: tokenUsageSchema, identifier: "TokenUsage" },
-	{ schema: kodelyCodeEventsSchema, identifier: "KodelyCodeEvents" },
-]
-
-// Also export as default for ESM compatibility
-export default { typeDefinitions }

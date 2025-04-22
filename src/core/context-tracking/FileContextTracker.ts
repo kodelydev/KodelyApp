@@ -164,8 +164,8 @@ export class FileContextTracker {
 				path: filePath,
 				record_state: "active",
 				record_source: source,
-				roo_read_date: getLatestDateForField(filePath, "roo_read_date"),
-				roo_edit_date: getLatestDateForField(filePath, "roo_edit_date"),
+				kodely_read_date: getLatestDateForField(filePath, "kodely_read_date"),
+				kodely_edit_date: getLatestDateForField(filePath, "kodely_edit_date"),
 				user_edit_date: getLatestDateForField(filePath, "user_edit_date"),
 			}
 
@@ -176,17 +176,17 @@ export class FileContextTracker {
 					this.recentlyModifiedFiles.add(filePath)
 					break
 
-				// roo_edited: Roo has edited the file
-				case "roo_edited":
-					newEntry.roo_read_date = now
-					newEntry.roo_edit_date = now
+				// kodely_edited: Kodely has edited the file
+				case "kodely_edited":
+					newEntry.kodely_read_date = now
+					newEntry.kodely_edit_date = now
 					this.checkpointPossibleFiles.add(filePath)
 					break
 
-				// read_tool/file_mentioned: Roo has read the file via a tool or file mention
+				// read_tool/file_mentioned: Kodely has read the file via a tool or file mention
 				case "read_tool":
 				case "file_mentioned":
-					newEntry.roo_read_date = now
+					newEntry.kodely_read_date = now
 					break
 			}
 

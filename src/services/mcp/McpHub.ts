@@ -409,7 +409,7 @@ export class McpHub {
 		}
 
 		const workspaceFolder = vscode.workspace.workspaceFolders[0]
-		const projectMcpDir = path.join(workspaceFolder.uri.fsPath, ".roo")
+		const projectMcpDir = path.join(workspaceFolder.uri.fsPath, ".kodely")
 		const projectMcpPath = path.join(projectMcpDir, "mcp.json")
 
 		try {

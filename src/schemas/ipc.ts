@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { RooCodeEventName, rooCodeEventsSchema, rooCodeSettingsSchema } from "./index"
+import { KodelyCodeEventName, kodelyCodeEventsSchema, kodelyCodeSettingsSchema } from "./index"
 
 /**
  * Ack
@@ -28,7 +28,7 @@ export const taskCommandSchema = z.discriminatedUnion("commandName", [
 	z.object({
 		commandName: z.literal(TaskCommandName.StartNewTask),
 		data: z.object({
-			configuration: rooCodeSettingsSchema,
+			configuration: kodelyCodeSettingsSchema,
 			text: z.string(),
 			images: z.array(z.string()).optional(),
 			newTab: z.boolean().optional(),
@@ -52,48 +52,48 @@ export type TaskCommand = z.infer<typeof taskCommandSchema>
 
 export const taskEventSchema = z.discriminatedUnion("eventName", [
 	z.object({
-		eventName: z.literal(RooCodeEventName.Message),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.Message],
+		eventName: z.literal(KodelyCodeEventName.Message),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.Message],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskCreated),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskCreated],
+		eventName: z.literal(KodelyCodeEventName.TaskCreated),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskCreated],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskStarted),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskStarted],
+		eventName: z.literal(KodelyCodeEventName.TaskStarted),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskStarted],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskModeSwitched),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskModeSwitched],
+		eventName: z.literal(KodelyCodeEventName.TaskModeSwitched),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskModeSwitched],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskPaused),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskPaused],
+		eventName: z.literal(KodelyCodeEventName.TaskPaused),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskPaused],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskUnpaused),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskUnpaused],
+		eventName: z.literal(KodelyCodeEventName.TaskUnpaused),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskUnpaused],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskAskResponded),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskAskResponded],
+		eventName: z.literal(KodelyCodeEventName.TaskAskResponded),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskAskResponded],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskAborted),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskAborted],
+		eventName: z.literal(KodelyCodeEventName.TaskAborted),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskAborted],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskSpawned),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskSpawned],
+		eventName: z.literal(KodelyCodeEventName.TaskSpawned),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskSpawned],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskCompleted),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskCompleted],
+		eventName: z.literal(KodelyCodeEventName.TaskCompleted),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskCompleted],
 	}),
 	z.object({
-		eventName: z.literal(RooCodeEventName.TaskTokenUsageUpdated),
-		payload: rooCodeEventsSchema.shape[RooCodeEventName.TaskTokenUsageUpdated],
+		eventName: z.literal(KodelyCodeEventName.TaskTokenUsageUpdated),
+		payload: kodelyCodeEventsSchema.shape[KodelyCodeEventName.TaskTokenUsageUpdated],
 	}),
 ])
 

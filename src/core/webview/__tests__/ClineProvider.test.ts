@@ -1995,7 +1995,7 @@ describe("Project MCP Settings", () => {
 
 		// Verify directory was created
 		expect(fs.mkdir).toHaveBeenCalledWith(
-			expect.stringContaining(".roo"),
+			expect.stringContaining(".kodely"),
 			expect.objectContaining({ recursive: true }),
 		)
 
@@ -2038,7 +2038,7 @@ describe("Project MCP Settings", () => {
 
 		// Verify error message was shown
 		expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
-			expect.stringContaining("Failed to create or open .roo/mcp.json"),
+			expect.stringContaining("Failed to create or open .kodely/mcp.json"),
 		)
 	})
 })

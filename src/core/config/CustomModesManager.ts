@@ -8,7 +8,7 @@ import { arePathsEqual, getWorkspacePath } from "../../utils/path"
 import { logger } from "../../utils/logging"
 import { GlobalFileNames } from "../../shared/globalFileNames"
 
-const ROOMODES_FILENAME = ".roomodes"
+const KODELYMODES_FILENAME = ".kodelymodes"
 
 export class CustomModesManager {
 	private disposables: vscode.Disposable[] = []
@@ -48,15 +48,15 @@ export class CustomModesManager {
 		}
 	}
 
-	private async getWorkspaceRoomodes(): Promise<string | undefined> {
+	private async getWorkspaceKodelymodes(): Promise<string | undefined> {
 		const workspaceFolders = vscode.workspace.workspaceFolders
 		if (!workspaceFolders || workspaceFolders.length === 0) {
 			return undefined
 		}
 		const workspaceRoot = getWorkspacePath()
-		const roomodesPath = path.join(workspaceRoot, ROOMODES_FILENAME)
-		const exists = await fileExistsAtPath(roomodesPath)
-		return exists ? roomodesPath : undefined
+		const kodelymodesPath = path.join(workspaceRoot, KODELYMODES_FILENAME)
+		const exists = await fileExistsAtPath(kodelymodesPath)
+		return exists ? kodelymodesPath : undefined
 	}
 
 	private async loadModesFromFile(filePath: string): Promise<ModeConfig[]> {
@@ -152,28 +152,28 @@ export class CustomModesManager {
 						return
 					}
 
-					// Get modes from .roomodes if it exists (takes precedence)
-					const roomodesPath = await this.getWorkspaceRoomodes()
-					const roomodesModes = roomodesPath ? await this.loadModesFromFile(roomodesPath) : []
+					// Get modes from .kodelymodes if it exists (takes precedence)
+					const kodelymodesPath = await this.getWorkspaceKodelymodes()
+					const kodelyModesModes = kodelymodesPath ? await this.loadModesFromFile(kodelymodesPath) : []
 
-					// Merge modes from both sources (.roomodes takes precedence)
-					const mergedModes = await this.mergeCustomModes(roomodesModes, result.data.customModes)
+					// Merge modes from both sources (.kodelymodes takes precedence)
+					const mergedModes = await this.mergeCustomModes(kodelyModesModes, result.data.customModes)
 					await this.context.globalState.update("customModes", mergedModes)
 					await this.onUpdate()
 				}
 			}),
 		)
 
-		// Watch .roomodes file if it exists
-		const roomodesPath = await this.getWorkspaceRoomodes()
-		if (roomodesPath) {
+		// Watch .kodelymodes file if it exists
+		const kodelymodesPath = await this.getWorkspaceKodelymodes()
+		if (kodelymodesPath) {
 			this.disposables.push(
 				vscode.workspace.onDidSaveTextDocument(async (document) => {
-					if (arePathsEqual(document.uri.fsPath, roomodesPath)) {
+					if (arePathsEqual(document.uri.fsPath, kodelymodesPath)) {
 						const settingsModes = await this.loadModesFromFile(settingsPath)
-						const roomodesModes = await this.loadModesFromFile(roomodesPath)
-						// .roomodes takes precedence
-						const mergedModes = await this.mergeCustomModes(roomodesModes, settingsModes)
+						const kodelyModesModes = await this.loadModesFromFile(kodelymodesPath)
+						// .kodelymodes takes precedence
+						const mergedModes = await this.mergeCustomModes(kodelyModesModes, settingsModes)
 						await this.context.globalState.update("customModes", mergedModes)
 						await this.onUpdate()
 					}
@@ -187,16 +187,16 @@ export class CustomModesManager {
 		const settingsPath = await this.getCustomModesFilePath()
 		const settingsModes = await this.loadModesFromFile(settingsPath)
 
-		// Get modes from .roomodes if it exists
-		const roomodesPath = await this.getWorkspaceRoomodes()
-		const roomodesModes = roomodesPath ? await this.loadModesFromFile(roomodesPath) : []
+		// Get modes from .kodelymodes if it exists
+		const kodelymodesPath = await this.getWorkspaceKodelymodes()
+		const kodelyModesModes = kodelymodesPath ? await this.loadModesFromFile(kodelymodesPath) : []
 
 		// Create maps to store modes by source
 		const projectModes = new Map<string, ModeConfig>()
 		const globalModes = new Map<string, ModeConfig>()
 
 		// Add project modes (they take precedence)
-		for (const mode of roomodesModes) {
+		for (const mode of kodelyModesModes) {
 			projectModes.set(mode.slug, { ...mode, source: "project" as const })
 		}
 
@@ -209,7 +209,7 @@ export class CustomModesManager {
 
 		// Combine modes in the correct order: project modes first, then global modes
 		const mergedModes = [
-			...roomodesModes.map((mode) => ({ ...mode, source: "project" as const })),
+			...kodelyModesModes.map((mode) => ({ ...mode, source: "project" as const })),
 			...settingsModes
 				.filter((mode) => !projectModes.has(mode.slug))
 				.map((mode) => ({ ...mode, source: "global" as const })),
@@ -283,11 +283,11 @@ export class CustomModesManager {
 
 	private async refreshMergedState(): Promise<void> {
 		const settingsPath = await this.getCustomModesFilePath()
-		const roomodesPath = await this.getWorkspaceRoomodes()
+		const kodelymodesPath = await this.getWorkspaceKodelymodes()
 
 		const settingsModes = await this.loadModesFromFile(settingsPath)
-		const roomodesModes = roomodesPath ? await this.loadModesFromFile(roomodesPath) : []
-		const mergedModes = await this.mergeCustomModes(roomodesModes, settingsModes)
+		const kodelyModesModes = kodelymodesPath ? await this.loadModesFromFile(kodelymodesPath) : []
+		const mergedModes = await this.mergeCustomModes(kodelyModesModes, settingsModes)
 
 		await this.context.globalState.update("customModes", mergedModes)
 		await this.onUpdate()
@@ -296,13 +296,13 @@ export class CustomModesManager {
 	async deleteCustomMode(slug: string): Promise<void> {
 		try {
 			const settingsPath = await this.getCustomModesFilePath()
-			const roomodesPath = await this.getWorkspaceRoomodes()
+			const kodelymodesPath = await this.getWorkspaceKodelymodes()
 
 			const settingsModes = await this.loadModesFromFile(settingsPath)
-			const roomodesModes = roomodesPath ? await this.loadModesFromFile(roomodesPath) : []
+			const kodelyModesModes = kodelymodesPath ? await this.loadModesFromFile(kodelymodesPath) : []
 
 			// Find the mode in either file
-			const projectMode = roomodesModes.find((m) => m.slug === slug)
+			const projectMode = kodelyModesModes.find((m) => m.slug === slug)
 			const globalMode = settingsModes.find((m) => m.slug === slug)
 
 			if (!projectMode && !globalMode) {
@@ -311,8 +311,8 @@ export class CustomModesManager {
 
 			await this.queueWrite(async () => {
 				// Delete from project first if it exists there
-				if (projectMode && roomodesPath) {
-					await this.updateModesInFile(roomodesPath, (modes) => modes.filter((m) => m.slug !== slug))
+				if (projectMode && kodelymodesPath) {
+					await this.updateModesInFile(kodelymodesPath, (modes) => modes.filter((m) => m.slug !== slug))
 				}
 
 				// Delete from global settings if it exists there

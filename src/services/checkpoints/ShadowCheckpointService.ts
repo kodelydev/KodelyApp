@@ -368,7 +368,7 @@ export abstract class ShadowCheckpointService extends EventEmitter {
 		workspaceDir: string
 	}) {
 		const workspaceRepoDir = this.workspaceRepoDir({ globalStorageDir, workspaceDir })
-		const branchName = `roo-${taskId}`
+		const branchName = `kodely-${taskId}`
 		const git = simpleGit(workspaceRepoDir)
 		const success = await this.deleteBranch(git, branchName)
 

@@ -1,5 +1,5 @@
 export function getCallbackUrl(provider: string, uriScheme?: string) {
-	const callbackUrl = `${uriScheme || "vscode"}://kodelydev.kodely/${provider}`
+	const callbackUrl = `${uriScheme || "vscode"}://kodely.kodely/${provider}`
 	return encodeURIComponent(callbackUrl)
 }
 

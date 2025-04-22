@@ -152,7 +152,7 @@ describe("appendToFileTool", () => {
 			expect(mockDiffViewProvider.open).toHaveBeenCalledWith("test.txt")
 			expect(mockDiffViewProvider.update).toHaveBeenCalledWith("test content", true)
 			expect(mockAskApproval).toHaveBeenCalled()
-			expect(mockFileContextTracker.trackFileContext).toHaveBeenCalledWith("test.txt", "roo_edited")
+			expect(mockFileContextTracker.trackFileContext).toHaveBeenCalledWith("test.txt", "kodely_edited")
 			expect(mockCline.didEditFile).toBe(true)
 		})
 
@@ -176,7 +176,7 @@ describe("appendToFileTool", () => {
 			expect(mockDiffViewProvider.update).toHaveBeenCalledWith("existing content\ntest content", true)
 			// The tool adds its own newline between existing and new content
 			expect(mockAskApproval).toHaveBeenCalled()
-			expect(mockFileContextTracker.trackFileContext).toHaveBeenCalledWith("test.txt", "roo_edited")
+			expect(mockFileContextTracker.trackFileContext).toHaveBeenCalledWith("test.txt", "kodely_edited")
 		})
 	})
 
@@ -257,7 +257,7 @@ describe("appendToFileTool", () => {
 			expect(mockDiffViewProvider.open).not.toHaveBeenCalled()
 		})
 
-		it("should handle rooignore validation failures", async () => {
+		it("should handle kodelyignore validation failures", async () => {
 			// Setup
 			const validateAccessMock = jest.fn().mockReturnValue(false) as jest.MockedFunction<
 				(filePath: string) => boolean
@@ -265,8 +265,8 @@ describe("appendToFileTool", () => {
 			mockCline.kodelyIgnoreController = {
 				validateAccess: validateAccessMock,
 			} as unknown as KodelyIgnoreController
-			const mockRooIgnoreError = "RooIgnore error"
-			;(formatResponse.rooIgnoreError as jest.Mock).mockReturnValue(mockRooIgnoreError)
+			const mockKodelyIgnoreError = "KodelyIgnore error"
+			;(formatResponse.kodelyIgnoreError as jest.Mock).mockReturnValue(mockKodelyIgnoreError)
 			;(formatResponse.toolError as jest.Mock).mockReturnValue("Tool error")
 
 			// Execute

@@ -13,8 +13,8 @@
     mkDevShell = system: let
       pkgs = import nixpkgs { inherit system; };
     in pkgs.mkShell {
-      name = "roo-code";
-      
+      name = "kodely";
+
       packages = with pkgs; [
         nodejs_20
         corepack_20

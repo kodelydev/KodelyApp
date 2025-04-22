@@ -510,11 +510,11 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			}
 
 			const workspaceFolder = vscode.workspace.workspaceFolders[0]
-			const rooDir = path.join(workspaceFolder.uri.fsPath, ".roo")
-			const mcpPath = path.join(rooDir, "mcp.json")
+			const kodelyDir = path.join(workspaceFolder.uri.fsPath, ".kodely")
+			const mcpPath = path.join(kodelyDir, "mcp.json")
 
 			try {
-				await fs.mkdir(rooDir, { recursive: true })
+				await fs.mkdir(kodelyDir, { recursive: true })
 				const exists = await fileExistsAtPath(mcpPath)
 				if (!exists) {
 					await fs.writeFile(mcpPath, JSON.stringify({ mcpServers: {} }, null, 2))
@@ -1330,7 +1330,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			break
 		case "humanRelayResponse":
 			if (message.requestId && message.text) {
-				vscode.commands.executeCommand("roo-cline.handleHumanRelayResponse", {
+				vscode.commands.executeCommand("kodely-code.handleHumanRelayResponse", {
 					requestId: message.requestId,
 					text: message.text,
 					cancelled: false,
@@ -1340,7 +1340,7 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 
 		case "humanRelayCancel":
 			if (message.requestId) {
-				vscode.commands.executeCommand("roo-cline.handleHumanRelayResponse", {
+				vscode.commands.executeCommand("kodely-code.handleHumanRelayResponse", {
 					requestId: message.requestId,
 					cancelled: true,
 				})

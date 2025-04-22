@@ -132,7 +132,7 @@ export async function insertContentTool(
 
 		// Track file edit operation
 		if (relPath) {
-			await cline.getFileContextTracker().trackFileContext(relPath, "roo_edited" as RecordSource)
+			await cline.getFileContextTracker().trackFileContext(relPath, "kodely_edited" as RecordSource)
 		}
 
 		cline.didEditFile = true

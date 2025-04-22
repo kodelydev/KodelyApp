@@ -69,7 +69,7 @@
 	Contact me if you have any questions:
 		- GitHub: KJ7LNW
 		- Discord: kj7lnw
-		- [roo-cline at z.ewheeler.org]
+		- [kodely-code at kodely.dev]
 
 	Cheers,
 		-Eric, KJ7LNW
